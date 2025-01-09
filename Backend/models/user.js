@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
       activo: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
+      },
+      fecha_creacion: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
       }
     }, {
       tableName: 'tb_usuarios',
@@ -28,7 +32,12 @@ module.exports = (sequelize, DataTypes) => {
     });
   
     Usuarios.associate = function(models) {
-      // Aquí puedes definir las asociaciones con otras tablas si es necesario
+      Usuarios.belongsToMany(models.tb_roles, {
+        through: models.tb_usuarios_roles,
+        foreignKey: 'id_usuario',
+        otherKey: 'id_rol',
+        as: 'roles'
+      });
     };
   
     return Usuarios;
