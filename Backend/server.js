@@ -40,28 +40,11 @@ app.use(passport.initialize());
 
 // Incluir rutas CRUD
 app.use('/api', recupera);     //recuperacion de contraseña
-app.use('/api/reciclaje', reciclajeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
   res.json({ message: 'Acceso a la Ruta protegida' });
 });
-app.use('/api/negocios', require('./routes/negocioRoutes'));
-app.use('/api/ofertas', require('./routes/ofertaRoutes'));
-app.use('/api/credenciales', require('./routes/credencialRoutes'));
-app.use('/api/puntos_verdes', require('./routes/puntoVerdeRoutes'));
-app.use('/api/admins', require('./routes/admins'));
-app.use('/api/canjea_ofertas', require('./routes/canjeaOfertas'));
-app.use('/api/ciudadanos', require('./routes/ciudadanos'));
-app.use('/api/greecoins', require('./routes/greecoins'));
-app.use('/api/historial', require('./routes/historiales'));
-app.use('/api/historial_negocios', require('./routes/historialNegocios'));
-app.use('/api/materiales', require('./routes/materiales'));
-app.use('/api/reciclajes', require('./routes/reciclajes'));
-app.use('/api/registro_reciclaje', require('./routes/registroReciclajeRoutes'));
-// Ruta para las operaciones con GreenCoins
-app.use('/api/ofertas_greencoins', operaciones);
-
-app.use('/api/notificaciones', notificationRoutes);
+app.use('/api/users', require('./routes/users'));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
