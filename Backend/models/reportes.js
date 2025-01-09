@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   
+    Reportes.associate = function(models) {
+      Reportes.belongsTo(models.tb_usuarios, { foreignKey: 'id_usuario', as: 'usuario' });
+    };
+  
     return Reportes;
   };
   

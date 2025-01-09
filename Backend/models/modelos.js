@@ -34,6 +34,10 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   
+    VersionesModelos.associate = function(models) {
+      VersionesModelos.belongsTo(models.tb_usuarios, { foreignKey: 'id_usuario_creador', as: 'usuario_creador' });
+    };
+  
     return VersionesModelos;
   };
   

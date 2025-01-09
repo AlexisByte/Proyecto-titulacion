@@ -30,6 +30,11 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   
+    Notificaciones.associate = function(models) {
+      Notificaciones.belongsTo(models.tb_usuarios, { foreignKey: 'id_usuario_receptor', as: 'receptor' });
+      Notificaciones.belongsTo(models.tb_usuarios, { foreignKey: 'id_usuario_emisor', as: 'emisor' });
+    };
+  
     return Notificaciones;
   };
   

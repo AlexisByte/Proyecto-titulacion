@@ -34,6 +34,10 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: false
     });
   
+    ReglasNegocio.associate = function(models) {
+      ReglasNegocio.belongsTo(models.tb_usuarios, { foreignKey: 'id_usuario_creador', as: 'creador' });
+    };
+  
     return ReglasNegocio;
   };
   
