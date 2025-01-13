@@ -9,9 +9,6 @@ const recupera = require('./routes/password');
 const authRoutes = require('./routes/auth');
 const passportJWT = require('passport-jwt');
 const { Strategy, ExtractJwt } = passportJWT;
-const reciclajeRoutes = require('./routes/reciclajeRoutes');
-const operaciones = require('./routes/operaciones');
-const notificationRoutes = require('./routes/notificationRoutes'); // Importar rutas de notificaciones
 
 //require('./config/passport')(passport);
 
@@ -45,6 +42,10 @@ app.use('/api/protected', passport.authenticate('jwt', { session: false }), (req
   res.json({ message: 'Acceso a la Ruta protegida' });
 });
 app.use('/api/users', require('./routes/users'));
+
+app.use('/api/users/admins', require('./routes/admins'));
+//app.use('/api/users/gerentes', require('./routes/gerentes'));
+//app.use('/api/users/ventanillas', require('./routes/ventanillas'));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

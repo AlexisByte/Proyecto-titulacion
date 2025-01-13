@@ -13,32 +13,55 @@ router.get('/', async (req, res) => {
   }
 });
 
+/*
 // Crear un nuevo usuario
 router.post('/', async (req, res) => {
-    const { nombre, email, contrasena } = req.body;
-  
-    try {
-      // Verificar si el correo ya existe
-      const usuarioExistente = await db.tb_usuarios.findOne({ where: { email } });
-      if (usuarioExistente) {
-        return res.status(400).json({ message: 'El correo ya está en uso.' });
-      }
-  
-      // Encriptar la contraseña
-      const hashedPassword = await bcrypt.hash(contrasena, 10);
-  
-      // Crear el nuevo usuario
-      const usuario = await db.tb_usuarios.create({
-        nombre,
-        email,
-        contrasena: hashedPassword
-      });
-  
-      res.status(201).json(usuario);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+  const { nombre, email, contrasena, rol } = req.body;
+
+  try {
+    // Verificar si el correo ya existe
+    const usuarioExistente = await db.tb_usuarios.findOne({ where: { email } });
+    if (usuarioExistente) {
+      return res.status(400).json({ message: 'El correo ya está en uso.' });
     }
-  });
+
+    // Verificar si el rol proporcionado existe
+    const rolExistente = await db.tb_roles.findByPk(rol);
+    if (!rolExistente) {
+      return res.status(400).json({ message: 'El rol proporcionado no es válido.' });
+    }
+
+    // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(contrasena, 10);
+
+    // Crear el nuevo usuario
+    const usuario = await db.tb_usuarios.create({
+      nombre,
+      email,
+      contrasena: hashedPassword,
+    });
+
+    // Asignar el rol al usuario
+    await db.tb_usuarios_roles.create({
+      id_usuario: usuario.id_usuario,
+      id_rol: rol,
+      fecha_asignacion: new Date(),
+    });
+
+    res.status(201).json({ 
+      message: 'Usuario creado exitosamente.',
+      usuario: {
+        id_usuario: usuario.id_usuario,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        rol: rolExistente.nombre_rol,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+*/
 
 // Obtener un usuario por ID
 router.get('/:id', async (req, res) => {
@@ -55,6 +78,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Actualizar un usuario por ID
+/*
 router.put('/:id', async (req, res) => {
   try {
     const usuario = await db.tb_usuarios.findByPk(req.params.id);
@@ -68,6 +92,7 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // Eliminar un usuario por ID
 router.delete('/:id', async (req, res) => {
@@ -106,5 +131,5 @@ router.delete('/delete', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
+*/
 module.exports = router;

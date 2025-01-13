@@ -6,13 +6,6 @@
     "host": "localhost",
     "dialect": "postgres"
   },
-  "test": {
-    "username": "root",
-    "password": "123321",
-    "database": "db_greenpoint",
-    "host": "localhost",
-    "dialect": "mysql"
-  },
   "production": {
     "username": "root",
     "password": null,

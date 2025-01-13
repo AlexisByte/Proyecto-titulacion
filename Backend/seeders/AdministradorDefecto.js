@@ -6,38 +6,38 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Datos del administrador por defecto
     const nombre = 'Admin Default';
-    const correo_electronico = 'admin@greenpoint.com';
-    const contrasena = 'Dmngrnpnt2024'; // Asegúrate de cambiar esto a una contraseña segura
+    const correo_electronico = 'admin@titulacion.com';
+    const contrasena = 'Dmngrnpnt2024'; // Cambia esto a una contraseña segura
+    const activo = true;
+    const rol = 1;
 
     // Encriptar la contraseña
     const hashedPassword = await bcrypt.hash(contrasena, 10);
 
-    // Insertar el administrador en tb_admin
-    const [admin] = await queryInterface.bulkInsert('tb_admin', [{
-      nombre,
-      fechacreacion: new Date()
-    }], { returning: true });
+    // Insertar el usuario en tb_usuarios
+    const [usuario] = await queryInterface.bulkInsert('tb_usuarios', [
+      {
+        nombre,
+        email: correo_electronico,
+        contrasena: hashedPassword,
+        activo,
+        fecha_creacion: new Date()
+      }
+    ], { returning: true });
 
-    // Insertar las credenciales en tb_credenciales
-    await queryInterface.bulkInsert('tb_credenciales', [{
-      correo_electronico,
-      contrasena: hashedPassword,
-      resetToken: null,
-      resetTokenExpires: null,
-      tipousuario: 3, // 3 para admin
-      usuario_id: admin.admin_id,
-      fechacreacion: new Date()
-    }]);
+    // Asignar el rol de Administrador al usuario creado en tb_usuarios_roles
+    await queryInterface.bulkInsert('tb_usuarios_roles', [
+      {
+        id_usuario: usuario.id_usuario,
+        id_rol: rol, // Rol de Administrador
+        fecha_asignacion: new Date()
+      }
+    ]);
   },
 
   down: async (queryInterface, Sequelize) => {
-    // Eliminar el administrador y las credenciales asociadas
-    await queryInterface.bulkDelete('tb_credenciales', {
-      correo_electronico: 'admin@example.com'
-    });
-
-    await queryInterface.bulkDelete('tb_admin', {
-      nombre: 'Admin Default'
-    });
+    // Eliminar el administrador y su rol asociado
+    await queryInterface.bulkDelete('tb_usuarios_roles', null, {});
+    await queryInterface.bulkDelete('tb_usuarios', { email: 'admin@titulacion.com' });
   }
 };

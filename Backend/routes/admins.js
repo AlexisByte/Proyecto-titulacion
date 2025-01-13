@@ -3,100 +3,32 @@ const router = express.Router();
 const db = require('../models');
 const { Op } = require('sequelize');
 
-// Get all 
+// Obtener usuarios con rol igual a 1
 router.get('/', async (req, res) => {
   try {
-    const admin = await db.tb_admin.findAll({
-      where: {
-        admin_id: {
-          [Op.gt]: 1  // Utiliza el operador 'greater than' (mayor que)
-        }
-      }
+    // Obtener los usuarios con rol ID = 1
+    const usuarios = await db.tb_usuarios.findAll({
+      include: [
+        {
+          model: db.tb_roles, // Relación con roles
+          as: 'rol', // Alias definido en la asociación Sequelize
+          where: { id: 1 }, // Filtrar por rol ID = 1
+          attributes: [], // No incluir datos del rol en la respuesta
+        },
+      ],
+      attributes: ['id', 'nombre'], // Seleccionar solo id y nombre del usuario
     });
-    //const admin = await db.tb_admin.findAll();
-    res.status(200).json(admin);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
-// Create a new 
-router.post('/', async (req, res) => {
-  try {
-    const admin = await db.tb_admin.create(req.body);
-    res.status(201).json(admin);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get an  by id
-router.get('/:id', async (req, res) => {
-  try {
-    const admin = await db.tb_admin.findByPk(req.params.id);
-    if (admin) {
-      res.status(200).json(admin);
-    } else {
-      res.status(404).json({ message: 'Not found' });
+    // Verificar si hay usuarios
+    if (!usuarios || usuarios.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron usuarios con el rol especificado.' });
     }
+
+    // Responder con los usuarios
+    res.status(200).json(usuarios);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
-// Update an  by id
-router.put('/:id', async (req, res) => {
-  try {
-    const admin = await db.tb_admin.findByPk(req.params.id);
-    if (admin) {
-      await admin.update(req.body);
-      res.status(200).json(admin);
-    } else {
-      res.status(404).json({ message: 'Not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Delete an  by id
-router.delete('/:id', async (req, res) => {
-  try {
-    const admins = await db.tb_admin.findAll();
-    const admin = await db.tb_admin.findByPk(req.params.id);
-    if (admin && admins) {
-      await admin.destroy();
-      console.log(admins)
-      res.status(204).json(admins);
-    } else {
-      res.status(404).json({ message: 'Not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-router.delete('/delete/:idcredencial/:idadmin', async (req, res) => {
-  const { idcredencial, idadmin } = req.params;
-  
-  try {
-    const credencial = await db.tb_credenciales.findByPk(idcredencial);
-    const admin = await db.tb_admin.findByPk(idadmin);
-    const credenciales = await db.tb_credenciales.findAll();
-
-    if (credencial && admin) {
-      await Promise.all([
-        credencial.destroy(),
-        admin.destroy()
-      ]);
-      res.status(204).json(credenciales);
-    } else {
-      res.status(404).json({ message: 'Credencial or Admin not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 
 module.exports = router;
