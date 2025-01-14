@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     tableName: 'tb_evaluaciones',
-    timestamps: false
+    timestamps: true
   });
 
   Evaluaciones.associate = function(models) {

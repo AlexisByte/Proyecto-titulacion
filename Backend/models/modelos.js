@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     }, {
       tableName: 'tb_versiones_modelos',
-      timestamps: false
+      timestamps: true
     });
   
     VersionesModelos.associate = function(models) {

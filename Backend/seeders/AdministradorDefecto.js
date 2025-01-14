@@ -3,11 +3,16 @@
 const bcrypt = require('bcrypt');
 
 module.exports = {
+  down: async (queryInterface, Sequelize) => {
+    // Eliminar el administrador y su rol asociado
+    await queryInterface.bulkDelete('tb_usuarios_roles', null, {});
+    await queryInterface.bulkDelete('tb_usuarios', { email: 'admin@titulacion.com' });
+  },
   up: async (queryInterface, Sequelize) => {
     // Datos del administrador por defecto
     const nombre = 'Admin Default';
     const correo_electronico = 'admin@titulacion.com';
-    const contrasena = 'Dmngrnpnt2024'; // Cambia esto a una contraseña segura
+    const contrasena = 'Titulacion2025'; // Cambia esto a una contraseña segura
     const activo = true;
     const rol = 1;
 
@@ -21,7 +26,8 @@ module.exports = {
         email: correo_electronico,
         contrasena: hashedPassword,
         activo,
-        fecha_creacion: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], { returning: true });
 
@@ -30,14 +36,11 @@ module.exports = {
       {
         id_usuario: usuario.id_usuario,
         id_rol: rol, // Rol de Administrador
-        fecha_asignacion: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ]);
-  },
-
-  down: async (queryInterface, Sequelize) => {
-    // Eliminar el administrador y su rol asociado
-    await queryInterface.bulkDelete('tb_usuarios_roles', null, {});
-    await queryInterface.bulkDelete('tb_usuarios', { email: 'admin@titulacion.com' });
   }
+
+  
 };

@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     }, {
       tableName: 'tb_notificaciones',
-      timestamps: false
+      timestamps: true
     });
   
     Notificaciones.associate = function(models) {

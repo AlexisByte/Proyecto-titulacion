@@ -42,10 +42,9 @@ app.use('/api/protected', passport.authenticate('jwt', { session: false }), (req
   res.json({ message: 'Acceso a la Ruta protegida' });
 });
 app.use('/api/users', require('./routes/users'));
+app.use('/api/roles', require('./routes/roles'));
+app.use('/api/roles', require('./routes/roles'));
 
-app.use('/api/users/admins', require('./routes/admins'));
-//app.use('/api/users/gerentes', require('./routes/gerentes'));
-//app.use('/api/users/ventanillas', require('./routes/ventanillas'));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

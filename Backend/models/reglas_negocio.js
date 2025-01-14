@@ -17,21 +17,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
       },
-      fecha_creacion: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-      },
-      fecha_actualizacion: {
-        type: DataTypes.DATE,
-        allowNull: true
-      },
       id_usuario_creador: {
         type: DataTypes.INTEGER,
         allowNull: false
       }
     }, {
       tableName: 'tb_reglas_negocio',
-      timestamps: false
+      timestamps: true
     });
   
     ReglasNegocio.associate = function(models) {

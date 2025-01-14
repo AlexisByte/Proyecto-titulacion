@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     tableName: 'tb_auditorias',
-    timestamps: false
+    timestamps: true
   });
 
   Auditorias.associate = function(models) {
