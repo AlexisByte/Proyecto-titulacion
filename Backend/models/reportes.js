@@ -16,10 +16,6 @@ module.exports = (sequelize, DataTypes) => {
       contenido: {
         type: DataTypes.TEXT,
         allowNull: false
-      },
-      fecha_generacion: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
       }
     }, {
       tableName: 'tb_reportes',

@@ -6,7 +6,7 @@ const db = require('../models');
 router.get('/', async (req, res) => {
   try {
     const roles = await db.tb_roles.findAll({
-      //attributes: ['id_rol', 'nombre_rol', 'descripcion'], // Seleccionar solo estos campos
+      attributes: ['id_rol', 'nombre_rol', 'descripcion'], // Seleccionar solo estos campos
     });
 
     res.status(200).json(roles);

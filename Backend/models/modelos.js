@@ -17,10 +17,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true
       },
-      fecha_creacion: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-      },
       id_usuario_creador: {
         type: DataTypes.INTEGER,
         allowNull: false
