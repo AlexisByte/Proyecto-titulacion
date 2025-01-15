@@ -44,6 +44,7 @@ app.use('/api/protected', passport.authenticate('jwt', { session: false }), (req
 app.use('/api/users', require('./routes/users'));
 app.use('/api/roles', require('./routes/roles'));
 app.use('/api/reglas', require('./routes/reglas_negocios'));
+app.use('/api/modelosIA', require('./routes/modelos'));
 
 
 app.listen(PORT, () => {

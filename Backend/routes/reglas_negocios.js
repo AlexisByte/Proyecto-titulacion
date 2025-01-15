@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
         {
           model: db.tb_usuarios,
           as: 'creador',
-          attributes: ['id_usuario', 'nombre', 'email'],
+          attributes: [ 'nombre'],
         },
       ],
       attributes: ['id_regla', 'nombre_regla', 'descripcion', 'valor_parametro', 'createdAt'],
@@ -54,7 +54,7 @@ router.get('/:id', async (req, res) => {
         {
           model: db.tb_usuarios,
           as: 'creador',
-          attributes: ['id_usuario', 'nombre', 'email'],
+          attributes: [ 'nombre'],
         },
       ],
     });
@@ -72,7 +72,7 @@ router.get('/:id', async (req, res) => {
 // Actualizar una regla de negocio por ID
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { nombre_regla, descripcion, valor_parametro } = req.body;
+  const { nombre_regla, descripcion, valor_parametro ,id_usuario_creador} = req.body;
 
   try {
     const regla = await db.tb_reglas_negocio.findByPk(id);
@@ -81,7 +81,7 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Regla de negocio no encontrada.' });
     }
 
-    await regla.update({ nombre_regla, descripcion, valor_parametro });
+    await regla.update({ nombre_regla, descripcion, valor_parametro ,id_usuario_creador});
 
     res.status(200).json({
       message: 'Regla de negocio actualizada exitosamente.',
