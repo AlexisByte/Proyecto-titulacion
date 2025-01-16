@@ -48,7 +48,7 @@ router.get('/roles/:id_rol', async (req, res) => {
           attributes: [], // No incluir datos del rol en la respuesta
         },
       ],
-      attributes: ['id_usuario', 'nombre'], // Seleccionar solo id_usuario y nombre del usuario
+      attributes: ['id_usuario', 'nombre','activo'], // Seleccionar solo id_usuario y nombre del usuario
     });
 
     // Verificar si hay usuarios
@@ -117,12 +117,26 @@ router.get('/:id', async (req, res) => {
   try {
     const usuario = await db.tb_usuarios.findByPk(req.params.id,
       {
+        include: [
+          {
+            model: db.tb_roles,
+            as: 'roles',
+            attributes: ['nombre_rol'] // No incluir datos del rol en la respuesta
+          },
+        ],
         attributes: ['id_usuario','nombre', 'email', 'activo'] // Solo incluir estos campos
       }
     );
     if (usuario) {
-      res.status(200).json(usuario);
-    } else {
+      res.status(201).json({ 
+        usuario: {
+          id_usuario: usuario.id_usuario,
+          nombre: usuario.nombre,
+          email: usuario.email,
+          nombre_rol: usuario.roles.length > 0 ? usuario.roles[0].nombre_rol : null, // Tomar el primer rol
+        }
+      });
+      } else {
       res.status(404).json({ message: 'Usuario no encontrado' });
     }
   } catch (error) {
@@ -130,10 +144,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Actualizar un usuario por ID
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { email, contrasena, activo, ...otrosCampos } = req.body;
+  const { email, contrasena, activo, rol } = req.body;
 
   try {
     // Verificar si el usuario existe
@@ -164,8 +177,20 @@ router.put('/:id', async (req, res) => {
       email: email || usuario.email, // Si no se envía email, usar el actual
       contrasena: nuevaContrasena,
       activo: nuevoActivo,
-      ...otrosCampos, // Actualizar cualquier otro campo enviado
     });
+
+    // Si se proporciona un nuevo rol y es diferente al actual
+    if (rol) {
+      const userRole = await db.tb_usuarios_roles.findOne({ where: { id_usuario: id } });
+      if (userRole) {
+        // Actualizar el rol en la tabla user_roles
+        await userRole.update({ id_rol: rol });
+      } else {
+        // Crear una nueva relación si no existe
+        await db.user_roles.create({ id_usuario: id, id_rol: rol });
+      }
+      
+    }
 
     res.status(200).json({
       message: 'Usuario actualizado exitosamente.',
@@ -174,13 +199,13 @@ router.put('/:id', async (req, res) => {
         nombre: usuario.nombre,
         email: usuario.email,
         activo: usuario.activo,
+        rol: rol || usuario.id_rol, // Devolver el nuevo rol
       },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 // Eliminar un usuario por ID
 router.delete('/:id', async (req, res) => {
