@@ -6,7 +6,6 @@ const passport = require('passport');
 
 
 const recupera = require('./routes/password');
-const authRoutes = require('./routes/auth');
 const passportJWT = require('passport-jwt');
 const { Strategy, ExtractJwt } = passportJWT;
 
@@ -35,18 +34,19 @@ passport.use(new Strategy(jwtOptions, async (jwt_payload, done) => {
 
 app.use(passport.initialize());
 
-// Incluir rutas CRUD
-app.use('/api', recupera);     //recuperacion de contraseña
-app.use('/api/auth', authRoutes);
-app.use('/api/protected', passport.authenticate('jwt', { session: false }), (req, res) => {
-  res.json({ message: 'Acceso a la Ruta protegida' });
-});
-app.use('/api/users', require('./routes/users'));
-app.use('/api/roles', require('./routes/roles'));
-app.use('/api/users-roles', require('./routes/users_roles'));
-app.use('/api/reglas', require('./routes/reglas_negocios'));
-app.use('/api/modelosIA', require('./routes/modelos'));
+const verificarToken = require('./controllers/auth');
 
+// Ruta de login
+app.use('/api/login', require('./routes/login'));
+
+// Rutas protegidas
+app.use('/api/users', verificarToken, require('./routes/users'));
+app.use('/api/roles', verificarToken, require('./routes/roles'));
+app.use('/api/users-roles', verificarToken, require('./routes/users_roles'));
+app.use('/api/reglas-negocio', verificarToken, require('./routes/reglas_negocios'));
+app.use('/api/modelosIA', verificarToken, require('./routes/modelos'));
+app.use('/api/reportes', verificarToken, require('./routes/reportes'));
+app.use('/api/evaluaciones', verificarToken, require('./routes/evaluaciones'));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

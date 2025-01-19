@@ -9,10 +9,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false
       },
-      tipo_reporte: {
-        type: DataTypes.ENUM('Global', 'Individual', 'Historial'),
-        allowNull: false
-      },
       contenido: {
         type: DataTypes.TEXT,
         allowNull: false
