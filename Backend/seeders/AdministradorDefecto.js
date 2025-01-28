@@ -12,8 +12,7 @@ module.exports = {
     // Datos del administrador por defecto
     const nombre = 'Admin Default';
     const correo_electronico = 'admin@titulacion.com';
-    const contrasena = 'Titulacion2025'; // Cambia esto a una contraseña segura
-    const activo = true;
+    const contrasena = 'Titulacion2025*'; // Cambia esto a una contraseña segura
     const rol = 1;
 
     // Encriptar la contraseña
@@ -24,10 +23,7 @@ module.exports = {
       {
         nombre,
         email: correo_electronico,
-        contrasena: hashedPassword,
-        activo,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        contrasena: hashedPassword
       }
     ], { returning: true });
 
@@ -35,9 +31,7 @@ module.exports = {
     await queryInterface.bulkInsert('tb_usuarios_roles', [
       {
         id_usuario: usuario.id_usuario,
-        id_rol: rol, // Rol de Administrador
-        createdAt: new Date(),
-        updatedAt: new Date()
+        id_rol: rol // Rol de Administrador
       }
     ]);
   }

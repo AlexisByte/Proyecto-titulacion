@@ -41,7 +41,7 @@ app.use('/api/login', require('./routes/login'));
 
 // Rutas protegidas
 app.use('/api/users', verificarToken, require('./routes/users'));
-app.use('/api/roles', verificarToken, require('./routes/roles'));
+app.use('/api/roles', require('./routes/roles'));
 app.use('/api/users-roles', verificarToken, require('./routes/users_roles'));
 app.use('/api/reglas-negocio', verificarToken, require('./routes/reglas_negocios'));
 app.use('/api/modelosIA', verificarToken, require('./routes/modelos'));
