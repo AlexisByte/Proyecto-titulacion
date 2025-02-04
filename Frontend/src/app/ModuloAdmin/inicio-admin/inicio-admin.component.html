@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Dashboard - Administrador</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets2/img/favicon.png" rel="icon">
+  <link href="assets2/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Optionally, you can include Popper.js for tooltips and popovers 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>-->
+  <!-- Bootstrap JS 
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/js/bootstrap.min.js"></script>-->
+
+
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+
+</head>
+
+  <body>
+    <div class="contentenedor-principal">
+      <!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
+
+  <div class="d-flex align-items-center justify-content-between">
+    <a href="/Administrador">
+      <img src="assets/img/hero-imsg.png" height="50px" width="auto">
+    </a>
+    <a href="/Administrador" class="logo d-flex align-items-center">
+      <span class="d-none d-lg-block">Tufinanciera</span>
+    </a>
+    <!--</i><i class="bi bi-list toggle-sidebar-btn"></i>-->
+    
+    <i class="bi bi-list toggle-sidebar-btn" ></i>
+  </div><!-- End Logo -->
+
+  <nav class="header-nav ms-auto">
+    <ul class="d-flex align-items-center">
+      
+      <li class="nav-item dropdown pe-3">
+        <a class="nav-link nav-profile d-flex align-items-center pe-0" (click)="toggleMenu('profile', $event)"role="button">
+          <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+          <span class="d-none d-md-block dropdown-toggle ps-2">{{ dato?.nombre }}</span>
+        </a>
+        <!-- End Profile Image Icon -->
+      
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile"  *ngIf="menus['profile']" style="right: 15px !important; top: 45px !important;">
+          <li class="dropdown-header">
+            <h6>{{ dato?.nombre }}</h6>
+            <span>Administrador</span>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li *ngIf="authService.isAuthenticated()">
+            <a  (click)="logout()"class="dropdown-item d-flex align-items-center" role="button">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Cerrar Sesión</span>
+            </a>
+          </li>
+        </ul>
+        <!-- End Profile Dropdown Items -->
+      </li>
+      <!-- End Profile Nav -->
+    </ul>
+  </nav><!-- End Icons Navigation -->
+
+</header><!-- End Header -->
+
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar" [class.collapsed]="sidebarCollapsed">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+    <li class="nav-item">
+      <a class="nav-link " [ngClass]="{'collapsed': collapsed}" href="/Administrador">        <i class="bi bi-grid"></i>
+        <span>Panel Principal</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+  
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-menu-button-wide"></i><span>Gestión</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+        <li>
+          <a href="" (click)="SeccionUsuarios($event)" [ngClass]="{'active': activeSection === 'Usuarios'}">
+            <i class="bi bi-circle"></i><span>Usuarios</span>
+          </a>
+        </li>
+        <li>
+          <a href="" >
+            <i class="bi bi-circle"></i><span>Ofertas</span>
+          </a>
+        </li>
+        <li>
+          <a href="" >
+            <i class="bi bi-circle"></i><span>Puntos Verdes</span>
+          </a>
+        </li>
+        <li>
+          <a href="" >
+            <i class="bi bi-circle"></i><span>Ciudadanos</span>
+          </a>
+        </li>
+        <li>
+          <a href="" >
+            <i class="bi bi-circle"></i><span>Negocios</span>
+          </a>
+        </li>
+        <li >
+          <a href="" >
+            <i class="bi bi-circle"></i><span>Administradores</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li class="nav-heading">Páginas</li>
+  
+    <li class="nav-item">
+      <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'profile'}" href="" (click)="SeccionPerfil($event)">        <i class="bi bi-person"></i>
+        <span>Perfil</span>
+      </a>
+    </li><!-- End Profile Page Nav -->
+  </ul>
+  
+
+</aside><!-- End Sidebar-->
+<main id="main" class="main" [class.toggle-sidebar]="sidebarCollapsed">
+  <div *ngIf="seccion === '1'">
+    <div class="pagetitle">
+      <h1>Panel Principal</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/Administrador">Home</a></li>
+          <li class="breadcrumb-item active">Administración - {{ dato?.nombre }}</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+  
+    <section class="section dashboard">
+      <!-- Left side columns -->
+        <div class="row">
+
+          <!-- Sales Card -->
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card revenue-card">
+              <div class="card-body">
+                <h5 class="card-title">Usuarios <span>| Activas</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-plus-slash-minus"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6><span style="font-size: 20px;">ofertas</span></h6>
+                    <a href="" class="text-success small pt-1 fw-bold" (click)="SeccionUsuarios($event)">Agregar usuarios</a>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Sales Card -->
+          <!-- Sales Card -->
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card customers-card">
+              <div class="card-body">
+                <h5 class="card-title">Ofertas <span>| Inactivas</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-plus-slash-minus"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6><span style="font-size: 20px;">ofertas</span></h6>
+                    <a href="" class="text-success small pt-1 fw-bold" >Agregar Ofertas</a>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Sales Card --> 
+                 
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card revenue-card">
+              <div class="card-body">
+                <h5 class="card-title">Puntos Verdes <span>| Activos</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-geo-alt-fill"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6><span style="font-size: 20px;">Puntos Verdes</span></h6>
+                    <a href="" class="text-success small pt-1 fw-bold" >Gestión Puntos</a>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Sales Card -->
+          <!-- Sales Card -->
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card customers-card">
+              <div class="card-body">
+                <h5 class="card-title">Puntos Verdes <span>| Inactivas</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-geo-alt-fill"></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6><span style="font-size: 20px;">Puntos Verdes</span></h6>
+                    <a href="" class="text-success small pt-1 fw-bold" >Gestión Puntos</a>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Sales Card --> 
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card revenue-card">
+              <div class="card-body">
+                <h5 class="card-title">Negocios <span>| Activos</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class='bx bx-store-alt'></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6><span style="font-size: 20px;">Negocios</span></h6>
+                    <a href="" class="text-success small pt-1 fw-bold" >Gestión Negocios</a>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Sales Card -->
+          <!-- Sales Card -->
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card customers-card">
+              <div class="card-body">
+                <h5 class="card-title">Negocios <span>| Inactivas</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class='bx bx-store-alt'></i>                  </div>
+                  <div class="ps-3">
+                    <h6><span style="font-size: 20px;">Negocios</span></h6>
+                    <a href="" class="text-success small pt-1 fw-bold" >Gestión Negocios</a>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Sales Card --> 
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card revenue-card">
+              <div class="card-body">
+                <h5 class="card-title">Ciudadanos <span>| Activos</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class='bx bx-user-check'></i>
+                  </div>
+                  <div class="ps-3">
+                    <h6><span style="font-size: 20px;">Ciudadanos</span></h6>
+                    <a href="" class="text-success small pt-1 fw-bold">Gestión Ciudadanos</a>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Sales Card -->
+          <!-- Sales Card -->
+          <div class="col-xxl-4 col-md-6">
+            <div class="card info-card customers-card">
+              <div class="card-body">
+                <h5 class="card-title">Ciudadanos<span>| Inactivas</span></h5>
+
+                <div class="d-flex align-items-center">
+                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                    <i class='bx bx-user-x'></i>                  </div>
+                  <div class="ps-3">
+                    <h6><span style="font-size: 20px;">Ciudadanos</span></h6>
+                    <a href="" class="text-success small pt-1 fw-bold" >Gestión Ciudadanos</a>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Sales Card --> 
+
+        </div>
+         
+    </section>
+  </div>
+  <div *ngIf="seccion === '2'">
+    <app-ges-usuarios></app-ges-usuarios>
+  </div>
+  <footer class="footer">
+    <span style="color: rgb(255, 255, 255)">Titulacion  &copy;  2025</span>
+  </footer>
+  </main><!-- End #main -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  </div>
+  </body>
+  <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+   <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+   <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+   <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+   <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+   <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+   <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+</html>

@@ -1,0 +1,203 @@
+.login-page {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-page .auth-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 1rem;
+}
+
+.login-page .auth-card {
+    background: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 2rem;
+}
+
+.login-page .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-page .auth-header h1 {
+    font-size: 1.5rem;
+    color: #1a73e8;
+    margin: 0 0 1rem 0;
+}
+
+.login-page .auth-header h2 {
+    font-size: 1.25rem;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+}
+
+.login-page .auth-header p {
+    color: #64748b;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.login-page .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.login-page .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.login-page .form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #334155;
+}
+
+.login-page .input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.login-page .input-icon {
+    position: absolute;
+    left: 1rem;
+    color: #94a3b8;
+}
+
+.login-page .input-group input {
+    padding-left: 2.5rem;
+}
+
+.login-page input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-page input:focus {
+    outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+}
+
+.login-page .form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.login-page .form-check input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+}
+
+.login-page .form-check label {
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+.login-page .btn-primary {
+    background: #1a73e8;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.login-page .btn-primary:hover {
+    background: #1557b0;
+}
+
+.login-page .auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.login-page .auth-footer p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+.login-page .auth-footer a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-page .auth-footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .login-page .auth-container {
+        padding: 0;
+    }
+
+    .login-page .auth-card {
+        border-radius: 0;
+        box-shadow: none;
+        padding: 1.5rem;
+    }
+}
+/* Add these styles to the existing login.css */
+.login-page .logo-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #1a73e8;
+    transition: color 0.2s;
+}
+
+.login-page .logo-link:hover {
+    color: #1557b0;
+}
+
+.login-page .logo-icon {
+    width: 32px;
+    height: 32px;
+    stroke-width: 2;
+}
+
+.invalid-feedback{
+    color: red;
+}
+
+.toggle-password {
+    cursor: pointer;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    user-select: none; /* Evita que el texto se seleccione al hacer clic */
+}
+.material-icons {
+    font-size: 24px;
+    color: #555;
+}
+.material-icons:hover {
+    color: #000;
+}

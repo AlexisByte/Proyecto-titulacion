@@ -1,0 +1,211 @@
+<div class="pagetitle">
+    <h1>Gestion de Materiales</h1>
+  </div>
+  <section class="section dashboard">
+    <div class="card separador-componentes">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Materiales</h5>
+          <p-table
+          #dt1
+          [value]="lsListado"
+          dataKey="materiales_id"
+          [rows]="10"
+          [showCurrentPageReport]="true"
+          [rowsPerPageOptions]="[10, 25, 50]"
+          [paginator]="true"
+          currentPageReportTemplate="Mostrar {first} - {last} de {totalRecords} elementos"
+          [globalFilterFields]="['materiales_id','tipo', 'valor_por_libra']"
+          [scrollable]="true"
+          scrollHeight="500px"
+          [tableStyle]="{ 'min-width': '20rem' }"
+          [sortMode]="'single'"
+          >
+          <ng-template pTemplate="caption">
+            <div class="flex">
+                <button pButton label="Limpiar" class="p-button-outlined" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
+                <span class="p-input-icon-left ml-auto">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text"  placeholder="Buscar" />
+                  </span>
+                <div class="p-toolbar-group-end">
+                  <p-button
+                    type="button"
+                    icon="pi pi-plus"
+                    styleClass="p-button-text"
+                    
+                  ></p-button>
+                </div>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="materiales_id">
+                <div class="flex align-items-center">
+                    Id <p-sortIcon field="materiales_id"></p-sortIcon>
+                </div>
+              </th>
+              <th pSortableColumn="tipo">
+                  <div class="flex align-items-center">
+                      Materiales<p-sortIcon field="tipo"></p-sortIcon>
+                  </div>
+              </th>
+              <th pSortableColumn="valor_por_libra">
+                  <div class="flex align-items-center">
+                      Valor por libra (GC) <p-sortIcon field="valor_por_libra"></p-sortIcon>
+                  </div>
+              </th>
+              <th pSortableColumn="estado">
+                  <div class="flex align-items-center">
+                      Estado <p-sortIcon field="estado"></p-sortIcon>
+                  </div>
+              </th>
+              <th>
+                <div class="flex align-items-center">
+                    Gestión
+                </div>
+            </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-customer>
+            <tr>
+              <td>{{ customer.materiales_id }}</td>
+              <td>{{ customer.tipo }}</td>
+              <td>{{"₵ "+ customer.valor_por_libra }}</td>
+              <td>
+              
+                <p-tag *ngIf="customer.estado == false" severity="danger" [value]="'DESACTIVADO'"></p-tag>
+                <p-tag *ngIf="customer.estado == true" severity="success" [value]="'ACTIVO'"></p-tag>
+               
+              <td>
+                <p-button
+                  type="button"
+                  icon="pi pi-pencil"
+                  styleClass="p-button-text"
+                  
+                ></p-button>
+                <p-button
+                  type="button"
+                  icon="pi pi-trash"
+                  styleClass="p-button-text"
+                  
+                ></p-button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="5">No se encontraron Materiales.</td>
+            </tr>
+        </ng-template>
+        </p-table>
+  
+        </div>
+      </div>
+      <p-dialog
+        header="Nuevo"
+        [(visible)]="visibleNuevo"
+        [modal]="true"
+        [style]="{ width: '50vw', minWidth: '300px', maxWidth: '80vw' }"
+        [draggable]="false"
+        [resizable]="false"
+      >
+      <ng-template pTemplate="header">
+        <span class="text-xl font-bold">Nuevo Material</span>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <label for="descripcion" class="form-label" style="font-size: 14px;">Material: </label>
+        <div class="input-group">
+          <span class="p-inputgroup-addon">
+            <i class="pi pi-pencil"></i>
+          </span>
+          <input pInputText placeholder="Nombre Material" id="descripcion" [(ngModel)]="strnombre" class="form-control" (input)="strnombre = strnombre" minlength="5" required style="font-size: 14px;"/>
+        </div>
+        <label for="valor" class="form-label" style="font-size: 14px;">Valor por libra(Greencoins): </label>
+        <div class="p-inputgroup">
+          <span class="p-inputgroup-addon">
+              <i class="pi pi-pencil"></i>
+          </span>
+          <input type="number" placeholder="Valor por libra" id="valor" [(ngModel)]="intvalor" class="form-control" min="5" max="10000" (input)="intvalor = intvalor" required style="font-size: 14px;"/>
+        </div>
+        <label for="Valor" class="form-label" style="font-size: 10px;">(min 5- max 1000)  </label>
+  
+      </ng-template>
+      
+      <ng-template pTemplate="footer">
+        <p-button icon="pi pi-save"  label="Registrar" styleClass="p-button-sm" ></p-button>
+      </ng-template>
+      
+      </p-dialog>
+      <p-dialog
+        header="Actualización"
+        [(visible)]="visibleEditar"
+        [modal]="true"
+        [style]="{ width: '50vw', minWidth: '300px', maxWidth: '80vw' }"
+        [draggable]="false"
+        [resizable]="false"
+      >
+      <ng-template pTemplate="header">
+        <span class="text-xl font-bold">Actualización Material</span>
+      </ng-template>
+    
+      <ng-template pTemplate="content">
+        <label for="Nombre" class="form-label" style="font-size: 14px;">Nombre:  </label>
+        <div class="p-inputgroup">
+          <span class="p-inputgroup-addon">
+              <i class="pi pi-pencil"></i>
+          </span>
+          <input pInputText placeholder="Nombre" id="Nombre" [(ngModel)]="objSeleccion.tipo" class="form-control" required style="font-size: 14px;" minlength="5"/>
+        </div>
+    
+        <label for="Valor" class="form-label" style="font-size: 14px;">Valor por libra (Greencoins):  </label>
+        <div class="p-inputgroup" >
+            <span class="p-inputgroup-addon">
+                <i class="pi pi-pencil"></i>
+            </span>
+            <input type="number" placeholder="Valor por libra en greencoins" id="Valor" [(ngModel)]="objSeleccion.valor_por_libra" class="form-control" min="5" max="10000" required style="font-size: 14px;"/>
+        </div>
+        <label for="Valor" class="form-label" style="font-size: 10px;">(min 5- max 1000)  </label>
+      </ng-template>
+      
+      <ng-template pTemplate="footer">
+        <p-button icon="pi pi-save"  label="Actualizar" styleClass="p-button-sm" ></p-button>
+      </ng-template>
+      
+      </p-dialog>
+      <p-dialog
+        header="Estado"
+        [(visible)]="visibleEstado"
+        [modal]="true"
+        [style]="{ width: '50vw', minWidth: '300px', maxWidth: '80vw' }"
+        [draggable]="false"
+        [resizable]="false"
+      >
+      <ng-template pTemplate="header">
+        <span class="text-xl font-bold">{{strEstado}} Material</span>
+      </ng-template>
+      
+      <ng-template pTemplate="content">
+        <div class="p-inputgroup" style="margin-top: 10px;">
+          <span class="p-inputgroup-addon">
+            <label for="Descripcion" class="form-label" style="font-size: 14px;">Nombre: </label>
+          </span>
+          <input pInputText [(ngModel)]="objSeleccion.tipo" class="p-inputtext-sm" readonly/>
+        </div>
+        <div class="p-inputgroup" style="margin-top: 10px;">
+          <span class="p-inputgroup-addon" >
+            <label for="Descripcion" class="form-label" style="font-size: 14px;">Valor por Libra(GC): </label>
+          </span>
+          <input pInputText [(ngModel)]="objSeleccion.valor_por_libra" class="p-inputtext-sm" readonly/>
+        </div>
+      </ng-template>
+      
+      <ng-template pTemplate="footer">
+        <p-button icon="pi pi-save"  label="Guardar" styleClass="p-button-sm" ></p-button>
+      </ng-template>
+      
+      </p-dialog>
+      <p-toast></p-toast>
+    </div>
+  </section>
+  

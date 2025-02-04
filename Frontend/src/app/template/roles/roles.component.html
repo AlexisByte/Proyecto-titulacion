@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selección de Roles - TuFinanciera</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <!-- Navegación -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar-content">
+        <div class="logo">
+          <a href="index.html" class="logo-link">
+            <i class="material-icons">security</i>
+            <span>TuFinanciera</span>
+          </a>
+        </div>
+        <div class="nav-menu">
+          <span class="user-name">{{ userName }}</span>
+          <button class="btn btn-login" (click)="logout()">Cerrar Sesión</button>
+        </div>
+      </div>
+      
+    </div>
+  </nav>
+
+  <!-- Selección de Roles -->
+  <main class="role-selection">
+    <div class="container">
+      <div class="role-header">
+        <h1>Selecciona tus Roles</h1>
+        <p>Puedes seleccionar el rol según tus necesidades</p>
+      </div>
+
+      <div class="roles-grid">
+        <a *ngFor="let role of userRoles" href="{{ role.nombre_rol }}" class="role-card">
+          <div class="role-card-header">
+            <i class="material-icons">person</i>
+          </div>
+          <h3>{{ role.nombre_rol }}</h3>
+          <p>{{ role.descripcion }}</p>
+        </a>
+      </div>      
+  
+    </div>
+  </main>
+</body>
+</html>

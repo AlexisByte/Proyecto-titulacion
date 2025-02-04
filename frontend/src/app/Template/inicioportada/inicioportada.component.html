@@ -1,29 +1,169 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página de Inicio</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TuFinanciera - Soluciones Financieras</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#">Inicio</a></li>
-                <li><a href="/login">Login</a></li>
-                <li><a href="/register">Register</a></li>
-            </ul>
-        </nav>
-    </header>
+<body class="index-page">
+  <!-- Navegación -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar-content">
+        <div class="logo">
+          <a href="/" class="logo-link">
+            <i class="material-icons">security</i>
+            <span>TuFinanciera</span>
+          </a>
+        </div>
 
-    <main>
-        <section id="inicio">
-            <h1>Bienvenido a nuestra página</h1>
-            <p>Esta es una página de inicio de ejemplo.</p>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2023 Tu Empresa. Todos los derechos reservados.</p>
-    </footer>
+        <!-- Menú Desktop -->
+        <div class="nav-menu">
+          <a href="#" class="nav-link">Inicio</a>
+          <a href="#" class="nav-link">Productos</a>
+          <a href="#" class="nav-link">Nosotros</a>
+          <a href="#" class="nav-link">Contacto</a>
+          <button class="btn btn-login" routerLink="/login">Iniciar Sesión</button>
+          <button class="btn btn-primary" routerLink="/register">Registrarse</button>
+        </div>
+
+        <!-- Botón menú móvil -->
+        <button class="menu-toggle" id="menuToggle">
+          <i class="material-icons">menu</i>
+        </button>
+      </div>
+
+      <!-- Menú Móvil -->
+      <div class="mobile-menu" id="mobileMenu">
+        <a href="#" class="nav-link">Inicio</a>
+        <a href="#" class="nav-link">Productos</a>
+        <a href="#" class="nav-link">Nosotros</a>
+        <a href="#" class="nav-link">Contacto</a>
+        <button class="btn btn-login" routerLink="/login" >Iniciar Sesión</button>
+        <button class="btn btn-primary" routerLink="/register">Registrarse</button>
+              </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container">
+      <div class="hero-content">
+        <h1>Soluciones Financieras a Tu Alcance</h1>
+        <p>Obtén el crédito que necesitas con las mejores tasas del mercado y asesoría personalizada.</p>
+        <button class="btn btn-primary btn-lg">
+          Solicitar Ahora
+          <i class="material-icons">arrow_forward</i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Beneficios -->
+  <section class="benefits">
+    <div class="container">
+      <h2>¿Por qué elegirnos?</h2>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <i class="material-icons">security</i>
+          <h3>Seguridad Garantizada</h3>
+          <p>Tu información siempre está protegida con los más altos estándares de seguridad.</p>
+        </div>
+        <div class="benefit-card">
+          <i class="material-icons">trending_up</i>
+          <h3>Mejores Tasas</h3>
+          <p>Ofrecemos tasas competitivas adaptadas a tu perfil financiero.</p>
+        </div>
+        <div class="benefit-card">
+          <i class="material-icons">group</i>
+          <h3>Asesoría Personalizada</h3>
+          <p>Expertos financieros te guiarán en cada paso del proceso.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Productos -->
+  <section class="products">
+    <div class="container">
+      <h2>Nuestros Productos</h2>
+      <div class="products-grid">
+        <div class="product-card">
+          <h3>Crédito Personal</h3>
+          <ul>
+            <li><i class="material-icons">check_circle</i>Montos desde $10,000</li>
+            <li><i class="material-icons">check_circle</i>Plazos flexibles</li>
+            <li><i class="material-icons">check_circle</i>Sin garantía</li>
+            <li><i class="material-icons">check_circle</i>Aprobación rápida</li>
+          </ul>
+        </div>
+        <div class="product-card">
+          <h3>Crédito Empresarial</h3>
+          <ul>
+            <li><i class="material-icons">check_circle</i>Capital de trabajo</li>
+            <li><i class="material-icons">check_circle</i>Expansión de negocio</li>
+            <li><i class="material-icons">check_circle</i>Tasas preferenciales</li>
+            <li><i class="material-icons">check_circle</i>Asesoría especializada</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section class="contact">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h2>¿Listo para comenzar?</h2>
+          <p>Nuestro equipo está listo para ayudarte a conseguir el financiamiento que necesitas.</p>
+          <div class="contact-details">
+            <div class="contact-item">
+              <i class="material-icons">phone</i>
+              <span>+1 (800) 123-4567</span>
+            </div>
+            <div class="contact-item">
+              <i class="material-icons">email</i>
+              <span>contactoAtufinanciera.com</span>
+            </div>
+            <div class="contact-item">
+              <i class="material-icons">location_on</i>
+              <span>Av. Principal 123, Ciudad</span>
+            </div>
+          </div>
+        </div>
+        <form class="contact-form">
+          <div class="form-group">
+            <label>Nombre completo</label>
+            <input type="text" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="email" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="tel" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Mensaje</label>
+            <textarea class="form-control" rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Enviar Solicitud</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2024 Tu Financiera. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+
 </body>
 </html>

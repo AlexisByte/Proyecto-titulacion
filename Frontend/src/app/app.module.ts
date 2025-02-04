@@ -2,12 +2,25 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // Importa FormsModule aquí
 import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+// IMPORTA ESTOS MÓDULOS DE PRIMENG
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { ToastModule } from 'primeng/toast';
+import { TagModule } from 'primeng/tag';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './template/login/login.component';
 import { RegisterComponent } from './template/register/register.component';
 import { InicioportadaComponent } from './template/inicioportada/inicioportada.component';
+import { RolesComponent } from './template/roles/roles.component';
+import { InicioAdminComponent } from './ModuloAdmin/inicio-admin/inicio-admin.component';
+import { InicioGerenteComponent } from './ModuloGerente/inicio-gerente/inicio-gerente.component';
+import { InicioVentanillaComponent } from './ModuloVentanilla/inicio-ventanilla/inicio-ventanilla.component';
+import { GesUsuariosComponent } from './ModuloAdmin/ges-usuarios/ges-usuarios.component';
 
 @NgModule({
   declarations: [
@@ -15,13 +28,25 @@ import { InicioportadaComponent } from './template/inicioportada/inicioportada.c
     InicioportadaComponent,
     LoginComponent,
     RegisterComponent,
-    
+    RolesComponent,
+    InicioAdminComponent,
+    InicioGerenteComponent,
+    InicioVentanillaComponent,
+    GesUsuariosComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
+    BrowserAnimationsModule,
+    MatSnackBarModule,
+
+    TableModule,
+    ButtonModule,
+    DialogModule,
+    ToastModule,
+    TagModule
   ],
   providers: [],
   bootstrap: [AppComponent]

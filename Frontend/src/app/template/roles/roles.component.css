@@ -1,5 +1,5 @@
-/* Estilos específicos para index.html */
-.index-page {
+/* Variables */
+:root {
   --primary: #3b82f6;
   --primary-hover: #2563eb;
   --gray-50: #f9fafb;
@@ -10,26 +10,27 @@
   --white: #ffffff;
 }
 
-.index-page * {
+/* Reset y estilos base */
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-.index-page body {
+body {
   font-family: system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   color: var(--gray-900);
 }
 
-.index-page .container {
+.container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
 /* Navegación */
-.index-page .navbar {
+.navbar {
   background: var(--white);
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   position: fixed;
@@ -38,14 +39,14 @@
   z-index: 1000;
 }
 
-.index-page .navbar-content {
+.navbar-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 4rem;
 }
 
-.index-page .logo {
+.logo {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -53,7 +54,7 @@
   font-size: 1.25rem;
 }
 
-.index-page .logo-link {
+.logo-link {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -62,30 +63,30 @@
   transition: color 0.2s;
 }
 
-.index-page .logo-link:hover {
+.logo-link:hover {
   color: var(--primary);
 }
 
-.index-page .logo .material-icons {
+.logo .material-icons {
   color: var(--primary);
 }
 
-.index-page .nav-menu {
+.nav-menu {
   display: none;
 }
 
-.index-page .nav-link {
+.nav-link {
   color: var(--gray-600);
   text-decoration: none;
   padding: 0.5rem 1rem;
   transition: color 0.2s;
 }
 
-.index-page .nav-link:hover {
+.nav-link:hover {
   color: var(--primary);
 }
 
-.index-page .menu-toggle {
+.menu-toggle {
   background: none;
   border: none;
   color: var(--gray-600);
@@ -93,19 +94,19 @@
   padding: 0.5rem;
 }
 
-.index-page .mobile-menu {
+.mobile-menu {
   display: none;
   padding: 1rem 0;
 }
 
-.index-page .mobile-menu.active {
+.mobile-menu.active {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
 /* Botones */
-.index-page .btn {
+.btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -117,36 +118,36 @@
   transition: all 0.2s;
 }
 
-.index-page .btn-primary {
+.btn-primary {
   background: var(--primary);
   color: var(--white);
 }
 
-.index-page .btn-primary:hover {
+.btn-primary:hover {
   background: var(--primary-hover);
 }
 
-.index-page .btn-login {
+.btn-login {
   background: none;
   color: var(--primary);
 }
 
-.index-page .btn-login:hover {
+.btn-login:hover {
   color: var(--primary-hover);
 }
 
-.index-page .btn-lg {
+.btn-lg {
   padding: 0.75rem 2rem;
   font-size: 1.125rem;
 }
 
-.index-page .btn-block {
+.btn-block {
   width: 100%;
   justify-content: center;
 }
 
 /* Hero */
-.index-page .hero {
+.hero {
   position: relative;
   background: var(--gray-900);
   color: var(--white);
@@ -154,7 +155,7 @@
   margin-top: 4rem;
 }
 
-.index-page .hero-overlay {
+.hero-overlay {
   position: absolute;
   inset: 0;
   background-image: url('https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?auto=format&fit=crop&q=80');
@@ -162,152 +163,152 @@
   opacity: 0.2;
 }
 
-.index-page .hero-content {
+.hero-content {
   position: relative;
   max-width: 48rem;
 }
 
-.index-page .hero h1 {
+.hero h1 {
   font-size: 3rem;
   line-height: 1.2;
   margin-bottom: 1.5rem;
 }
 
-.index-page .hero p {
+.hero p {
   font-size: 1.25rem;
   margin-bottom: 2rem;
 }
 
 /* Beneficios */
-.index-page .benefits {
+.benefits {
   padding: 5rem 0;
   background: var(--gray-50);
 }
 
-.index-page .benefits h2 {
+.benefits h2 {
   text-align: center;
   font-size: 2rem;
   margin-bottom: 3rem;
 }
 
-.index-page .benefits-grid {
+.benefits-grid {
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
-.index-page .benefit-card {
+.benefit-card {
   background: var(--white);
   padding: 1.5rem;
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.index-page .benefit-card .material-icons {
+.benefit-card .material-icons {
   font-size: 3rem;
   color: var(--primary);
   margin-bottom: 1rem;
 }
 
-.index-page .benefit-card h3 {
+.benefit-card h3 {
   margin-bottom: 0.5rem;
 }
 
 /* Productos */
-.index-page .products {
+.products {
   padding: 5rem 0;
 }
 
-.index-page .products h2 {
+.products h2 {
   text-align: center;
   font-size: 2rem;
   margin-bottom: 3rem;
 }
 
-.index-page .products-grid {
+.products-grid {
   display: grid;
   gap: 2rem;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
-.index-page .product-card {
+.product-card {
   border: 1px solid var(--gray-200);
   border-radius: 0.75rem;
   padding: 2rem;
 }
 
-.index-page .product-card h3 {
+.product-card h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.index-page .product-card ul {
+.product-card ul {
   list-style: none;
 }
 
-.index-page .product-card li {
+.product-card li {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
 }
 
-.index-page .product-card .material-icons {
+.product-card .material-icons {
   color: #22c55e;
 }
 
 /* Contacto */
-.index-page .contact {
+.contact {
   background: var(--gray-900);
   color: var(--white);
   padding: 5rem 0;
 }
 
-.index-page .contact-grid {
+.contact-grid {
   display: grid;
   gap: 3rem;
   grid-template-columns: 1fr;
 }
 
-.index-page .contact h2 {
+.contact h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
 }
 
-.index-page .contact-details {
+.contact-details {
   margin-top: 2rem;
 }
 
-.index-page .contact-item {
+.contact-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1rem;
 }
 
-.index-page .contact-item .material-icons {
+.contact-item .material-icons {
   color: var(--primary);
 }
 
-.index-page .contact-form {
+.contact-form {
   background: var(--white);
   padding: 2rem;
   border-radius: 0.75rem;
   color: var(--gray-900);
 }
 
-.index-page .form-group {
+.form-group {
   margin-bottom: 1rem;
 }
 
-.index-page .form-group label {
+.form-group label {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
 
-.index-page .form-control {
+.form-control {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--gray-200);
@@ -315,58 +316,151 @@
   font-size: 1rem;
 }
 
-.index-page .form-control:focus {
+.form-control:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* Footer */
-.index-page .footer {
+.footer {
   background: var(--gray-900);
   color: var(--gray-600);
   padding: 2rem 0;
   text-align: center;
 }
 
+/* Estilos para la página de selección de roles */
+.role-selection {
+  padding-top: 6rem;
+  min-height: 100vh;
+  background: var(--gray-50);
+}
+
+.role-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.role-header h1 {
+  font-size: 2.5rem;
+  color: var(--gray-900);
+  margin-bottom: 1rem;
+}
+
+.role-header p {
+  color: var(--gray-600);
+  font-size: 1.125rem;
+}
+
+.roles-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  margin-bottom: 3rem;
+}
+
+.role-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--white);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.role-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  color: inherit;
+}
+
+.role-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.role-card-header .material-icons {
+  font-size: 2.5rem;
+  color: var(--primary);
+}
+
+.role-card h3 {
+  font-size: 1.5rem;
+  color: var(--gray-900);
+  margin-bottom: 0.5rem;
+}
+
+.role-card p {
+  color: var(--gray-600);
+  margin-bottom: 1.5rem;
+}
+
+.role-features {
+  list-style: none;
+}
+
+.role-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
+}
+
+.role-features .material-icons {
+  color: #22c55e;
+  font-size: 1.25rem;
+}
+
+.user-name {
+  color: var(--gray-900);
+  font-weight: 500;
+  margin-right: 1rem;
+}
+
 /* Media Queries */
 @media (min-width: 768px) {
-  .index-page .nav-menu {
+  .nav-menu {
     display: flex;
     align-items: center;
     gap: 1rem;
   }
 
-  .index-page .menu-toggle {
+  .menu-toggle {
     display: none;
   }
 
-  .index-page .mobile-menu {
+  .mobile-menu {
     display: none !important;
   }
 
-  .index-page .contact-grid {
+  .contact-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (min-width: 1024px) {
-  .index-page .hero h1 {
+  .hero h1 {
     font-size: 3.5rem;
   }
 }
 
 /* Media Queries adicionales */
 @media (max-width: 768px) {
-  .index-page .role-header h1 {
+  .role-header h1 {
     font-size: 2rem;
   }
   
-  .index-page .roles-grid {
+  .roles-grid {
     grid-template-columns: 1fr;
   }
   
-  .index-page .role-card {
+  .role-card {
     padding: 1.5rem;
   }
 }

@@ -33,8 +33,17 @@ router.post('/', async (req, res) => {
       { expiresIn: '8h' } // Token válido por 8 horas
     );
 
+    const rol = await db.tb_usuarios_roles.findAll({ where: { id_usuario:usuario.id_usuario } });
+    const id_roles = rol.map(r => r.id_rol);
+
     res.status(200).json({ 
       message: 'Inicio de sesión exitoso.',
+      usuario: {
+        id_usuario: usuario.id_usuario,
+        nombre: usuario.nombre,
+        activo: usuario.activo,
+      },
+      roles: id_roles, // Ahora es un array con solo los IDs de roles
       token 
     });
   } catch (error) {
