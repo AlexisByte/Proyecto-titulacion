@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
-import { UrlServiciosWebService } from '../../Servicios/url-servicios-web.service';
+import { RolesService } from '../../Servicios/API/roles.service';
 
 
 @Component({
@@ -18,7 +18,7 @@ export class RegisterComponent implements OnInit {
   roles: any[] = []; // Lista de roles
   selectedRolName: string = ''; // Nombre del rol seleccionado
 
-  constructor(private urlServiciosWebService: UrlServiciosWebService) {}
+  constructor(private urlServiciosWebService: RolesService) {}
 
   async ngOnInit() {
     this.loadRoles();
@@ -26,7 +26,7 @@ export class RegisterComponent implements OnInit {
 
   
   loadRoles() {
-    this.urlServiciosWebService.ListadoRoles().subscribe(
+    this.urlServiciosWebService.obtenerRoles().subscribe(
       (data) => {
         this.roles = data; // Asigna los roles al arreglo
       },

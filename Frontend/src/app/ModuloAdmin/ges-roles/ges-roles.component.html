@@ -1,0 +1,252 @@
+<div class="pagetitle">
+    <h1>Gestion de Roles</h1>
+  </div><!-- End Page Title -->
+  
+  <section class="section dashboard">
+    
+    <div class="card">
+
+        <div class="filter">
+          <a class="icon" data-bs-toggle="dropdown" (click)="toggleMenu('menu4', $event)" role="button"><i class="bi bi-three-dots"></i></a>
+        </div>
+
+        <div class="card-body">
+          <h5 class="card-title"> Roles</h5>
+          <!-- Tabla de todas las ofertas -->
+          <p-table
+            #dt1
+            [value]="lsListado"
+            dataKey="id_rol"
+            [rows]="10"
+            [showCurrentPageReport]="true"
+            [rowsPerPageOptions]="[10, 25, 50]"
+            [paginator]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [globalFilterFields]="['nombre_rol', 'descripcion']"
+            [scrollable]="true"
+            scrollHeight="500px"
+            [tableStyle]="{ 'min-width': '40rem' }"
+            [sortMode]="'single'"
+        >
+            <ng-template pTemplate="caption">
+                <div class="flex">
+                    <button pButton label="Clear" class="p-button-outlined" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
+                    <span class="p-input-icon-left ml-auto">
+                        <input pInputText type="text" (input)="applyFilter($event)" placeholder="Buscar" />
+                    </span>
+                    <div class="p-toolbar-group-end">
+                      <p-button
+                        type="button"
+                        icon="pi pi-plus"
+                        styleClass="p-button-text"
+                        (click)="ModalNuevoInformacion()"
+                      ></p-button>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="id_rol">
+                        <div class="flex align-items-center">
+                            Id <p-sortIcon field="id_rol"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="nombre_rol">
+                        <div class="flex align-items-center">
+                            Rol <p-sortIcon field="nombre_rol"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="descripcion">
+                        <div class="flex align-items-center">
+                            Descripcion <p-sortIcon field="descripcion"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th>
+                      <div class="flex align-items-center">
+                          Gestión
+                      </div>
+                  </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-customer>
+                <tr>
+                    <td>{{ customer.id_rol }}</td>
+                    <td>{{ customer.nombre_rol}}</td>
+                    <td>{{ customer.descripcion}}</td>
+                    <td>
+                      <p-button
+                        type="button"
+                        icon="pi pi-pencil"
+                        styleClass="p-button-text"
+                        (click)="ModalEditarInformacion(customer)"
+                      ></p-button>
+                      <p-button
+                        type="button"
+                        icon="pi pi-trash"
+                        styleClass="p-button-text"
+                        (click)="ModalCambiarEstado(customer)"
+                      ></p-button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="5">No se encontraron Roles.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+          <!-- Fin Tabla de todas las ofertas -->
+
+          <p-dialog
+            header="Nuevo"
+            [(visible)]="visibleNuevo"
+            [modal]="true"
+            [style]="{ width: '50vw', minWidth: '300px', maxWidth: '80vw' }"
+            [draggable]="false"
+            [resizable]="false"
+          >
+          <ng-template pTemplate="header">
+            <span class="text-xl ">Nuevo Rol</span>
+          </ng-template>
+          <ng-template pTemplate="content">
+            
+            <form #newOfertaform="ngForm" (ngSubmit)="RegistrarNuevo(newOfertaform)" class="row g-3 needs-validation" novalidate style="margin-top: 0px;">
+
+              <div class="col-12 form-group" style="margin-top: -10px;">
+                <label for="newoferta" class="form-label" style="font-size: 14px;">Oferta nueva</label>
+                <div class="input-group has-validation">
+                  <input type="text" [(ngModel)]="newoferta" name="newoferta" class="form-control" id="newoferta" required style="font-size: 13px;" placeholder="Descripcion de la oferta">
+                  <div class="invalid-feedback floating-invalid-feedback">Debes ingresar un correo electrónico!</div>
+                </div>
+              </div>
+
+              <div class="col-12 form-group" style="margin-top: -10px;">
+                <label for="fecha_inicio" class="form-label" style="font-size: 14px;">Fecha inicio de la oferta</label>
+                <div class="input-group has-validation">
+                  <input type="datetime-local" name="fecha_inicio" [(ngModel)]="fecha_inicio" class="form-control" id="fecha_inicio" required style="font-size: 13px;">
+                  <div class="invalid-feedback floating-invalid-feedback">Ingresa una fecha de creación válida.</div>
+                </div>
+              </div>
+
+              <div class="col-12 form-group" style="margin-top: -10px;">
+                <label for="fecha_fin" class="form-label" style="font-size: 14px;">Fecha fin de la oferta</label>
+                <div class="input-group has-validation">
+                  <input type="datetime-local" name="fecha_fin" [(ngModel)]="fecha_fin" class="form-control" id="fecha_fin" required style="font-size: 13px;">
+                  <div class="invalid-feedback floating-invalid-feedback">Ingresa una fecha de creación válida.</div>
+                </div>
+              </div>
+
+              <div class="col-12 form-group" style="margin-top: -10px;">
+                  <label for="gc_necesarios" class="form-label" style="font-size: 14px;">Costo en GreenCoins</label>
+                  <div class="input-group has-validation">
+                    <input type="number" [(ngModel)]="gc_necesarios" name="gc_necesarios" class="form-control"   id="gc_necesarios" required style="font-size: 13px;" min="1" max="1000" >
+                    <div class="invalid-feedback floating-invalid-feedback">Debes ingresar una cantidad reciclada valida (min 1 - max 1000)!</div>
+                  </div>
+              </div>
+              
+              <div class="col-12 d-flex justify-content-center mt-3">
+                <button class="btn btn-primary w-50" type="submit">Registrar</button>
+              </div>
+            </form>
+
+          </ng-template>
+        
+          
+          </p-dialog>
+
+
+          <p-dialog
+            header="Actualización"
+            [(visible)]="visibleEditar"
+            [modal]="true"
+            [style]="{ width: '50vw', minWidth: '300px', maxWidth: '80vw' }"
+            [draggable]="false"
+            [resizable]="false"
+          >
+          <ng-template pTemplate="header">
+            <span class="text-xl">Actualización de oferta</span>
+          </ng-template>
+          
+          <ng-template pTemplate="content">
+            <form #newOfertaform="ngForm" (ngSubmit)="RegistrarActualizacion(newOfertaform)" class="row g-3 needs-validation" novalidate style="margin-top: 0px;">
+
+              <div class="col-12 form-group" style="margin-top: -10px;">
+                <label for="newoferta" class="form-label" style="font-size: 14px;">Oferta nueva</label>
+                <div class="input-group has-validation">
+                  <input type="text" [(ngModel)]="newoferta" name="newoferta" class="form-control" id="newoferta" required style="font-size: 13px;" placeholder="Descripcion de la oferta">
+                  <div class="invalid-feedback floating-invalid-feedback">Debes ingresar un correo electrónico!</div>
+                </div>
+              </div>
+
+              <div class="col-12 form-group" style="margin-top: -10px;">
+                <label for="fecha_inicio" class="form-label" style="font-size: 14px;">Fecha inicio de la oferta</label>
+                <div class="input-group has-validation">
+                  <input type="datetime-local" name="fecha_inicio" [(ngModel)]="fecha_inicio" class="form-control" id="fecha_inicio" required style="font-size: 13px;">
+                  <div class="invalid-feedback floating-invalid-feedback">Ingresa una fecha de creación válida.</div>
+                </div>
+              </div>
+
+              <div class="col-12 form-group" style="margin-top: -10px;">
+                <label for="fecha_fin" class="form-label" style="font-size: 14px;">Fecha fin de la oferta</label>
+                <div class="input-group has-validation">
+                  <input type="datetime-local" name="fecha_fin" [(ngModel)]="fecha_fin" class="form-control" id="fecha_fin" required style="font-size: 13px;">
+                  <div class="invalid-feedback floating-invalid-feedback">Ingresa una fecha de creación válida.</div>
+                </div>
+              </div>
+
+              <div class="col-12 form-group" style="margin-top: -10px;">
+                  <label for="gc_necesarios" class="form-label" style="font-size: 14px;">Costo en GreenCoins</label>
+                  <div class="input-group has-validation">
+                    <input type="number" [(ngModel)]="gc_necesarios" name="gc_necesarios" class="form-control"   id="gc_necesarios" required style="font-size: 13px;" min="1" max="1000" >
+                    <div class="invalid-feedback floating-invalid-feedback">Debes ingresar una cantidad reciclada valida (min 1 - max 1000)!</div>
+                  </div>
+              </div>
+              
+              <div class="col-12" style="margin-top: 10px;">
+                <button class="btn btn-primary w-100" type="submit">Actualizar</button>
+              </div>
+            </form>
+          </ng-template>
+      
+          </p-dialog>
+
+
+          <p-dialog
+            header="Eliminar oferta"
+            [(visible)]="visibleEstado"
+            [modal]="true"
+            [style]="{ width: '50vw', minWidth: '300px', maxWidth: '80vw' }"
+            [draggable]="false"
+            [resizable]="true"
+          >
+          
+          <ng-template pTemplate="content" >
+            <span class="text-xl " style="margin-top: 75px;">¿Estas seguro de eliminar esta oferta?</span> 
+          </ng-template>
+          
+          <ng-template pTemplate="footer">
+            <p-button icon="pi pi-save"  label="Eliminar" styleClass="p-button-sm" (click)="DesactivarOferta()"></p-button>
+          </ng-template>
+          
+          </p-dialog>
+
+        </div>
+
+      </div>
+    
+    
+    <div class="row">
+      <!-- Left side columns -->
+      <div class="col-lg-8">
+        <div class="row">
+          <!-- Reports -->
+          <div class="col-12">
+          </div><!-- End Reports -->
+        </div>
+      </div><!-- End Left side columns -->
+    </div>
+  </section>
+
+
+
+

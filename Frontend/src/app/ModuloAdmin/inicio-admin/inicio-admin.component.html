@@ -18,7 +18,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>-->
   <!-- Bootstrap JS 
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/js/bootstrap.min.js"></script>-->
+  
+  <!-- Vendor CSS Files -->
+  <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
 
+  <!-- Template Main CSS File -->
+  <link href="/assets/css/style.css" rel="stylesheet">
 
 
   <!-- Google Fonts -->
@@ -42,7 +53,7 @@
     </a>
     <!--</i><i class="bi bi-list toggle-sidebar-btn"></i>-->
     
-    <i class="bi bi-list toggle-sidebar-btn" ></i>
+    <i class="bi bi-list toggle-sidebar-btn" (click)="toggleSidebar()"></i>
   </div><!-- End Logo -->
 
   <nav class="header-nav ms-auto">
@@ -82,6 +93,7 @@
 <aside id="sidebar" class="sidebar" [class.collapsed]="sidebarCollapsed">
 
   <ul class="sidebar-nav" id="sidebar-nav">
+    
     <li class="nav-item">
       <a class="nav-link " [ngClass]="{'collapsed': collapsed}" href="/Administrador">        <i class="bi bi-grid"></i>
         <span>Panel Principal</span>
@@ -89,18 +101,25 @@
     </li><!-- End Dashboard Nav -->
   
     <li class="nav-item">
-      <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-menu-button-wide"></i><span>Gestión</span><i class="bi bi-chevron-down ms-auto"></i>
-      </a>
-      <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+      <a class="nav-link" 
+      [ngClass]="{'collapsed': !menus['gestion']}" 
+      (click)="toggleMenu('gestion', $event)">
+     <i class="bi bi-menu-button-wide"></i>
+     <span>Gestión</span>
+     <i class="bi bi-chevron-down ms-auto"></i>
+   </a>
+   <ul id="components-nav" 
+   class="nav-content collapse" 
+   [ngClass]="{'show': menus['gestion']}" 
+   data-bs-parent="#sidebar-nav">
         <li>
           <a href="" (click)="SeccionUsuarios($event)" [ngClass]="{'active': activeSection === 'Usuarios'}">
             <i class="bi bi-circle"></i><span>Usuarios</span>
           </a>
         </li>
         <li>
-          <a href="" >
-            <i class="bi bi-circle"></i><span>Ofertas</span>
+          <a href=""(click)="SeccionOfertas($event)" [ngClass]="{'active': activeSection === 'Roles'}">
+            <i class="bi bi-circle"></i><span>Roles</span>
           </a>
         </li>
         <li>
@@ -300,7 +319,7 @@
               </div>
             </div>
           </div><!-- End Sales Card --> 
-
+          
         </div>
          
     </section>
@@ -308,18 +327,26 @@
   <div *ngIf="seccion === '2'">
     <app-ges-usuarios></app-ges-usuarios>
   </div>
+  <div *ngIf="seccion === '3'">
+    <app-ges-roles></app-ges-roles>
+  </div>
   <footer class="footer">
-    <span style="color: rgb(255, 255, 255)">Titulacion  &copy;  2025</span>
+    <span style="color: rgb(0, 0, 0)">Titulacion  &copy;  2025</span>
   </footer>
   </main><!-- End #main -->
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   </div>
   </body>
-  <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-   <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-   <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-   <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
-   <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-   <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-   <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+  <!-- Vendor JS Files -->
+  <script src="/assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="/assets/vendor/echarts/echarts.min.js"></script>
+  <script src="/assets/vendor/quill/quill.js"></script>
+  <script src="/assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="/assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="/assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="/assets/js/main.js"></script>
 </html>

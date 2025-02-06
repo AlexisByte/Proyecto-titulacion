@@ -1,7 +1,7 @@
-import { LoginService } from '../../Servicios/login.service';
 import { Router } from '@angular/router';
 import { Component, OnInit,HostListener} from '@angular/core';
 import { NotificationService } from '../../Servicios/notification-service.service';
+import { LoginService } from '../../Servicios/login.service';
 
 @Component({
   selector: 'app-inicio-admin',
@@ -9,6 +9,7 @@ import { NotificationService } from '../../Servicios/notification-service.servic
   styleUrls: ['./inicio-admin.component.css',
   "../../../assets/vendor/bootstrap-icons/bootstrap-icons.css"]
 })
+
 export class InicioAdminComponent  implements OnInit{
 
   seccion: string = '1';
@@ -16,10 +17,10 @@ export class InicioAdminComponent  implements OnInit{
   activeSection: string = ''; // Variable para rastrear la sección activa
   collapsed: boolean = true; // O `false` según tu estado inicial
 
-  user: any = {};
   dato: any = {};
 
   sidebarCollapsed = false;
+  showProfileMenu = false; // Variable para controlar la visibilidad del dropdown
 
   constructor(
     public  authService: LoginService, 
@@ -44,12 +45,30 @@ export class InicioAdminComponent  implements OnInit{
     this.menus[menu] = !this.menus[menu];
     event.stopPropagation();
   }
-  private setActiveMenu(menu: string) {
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    Object.keys(this.menus).forEach(menu => {
+      this.menus[menu] = false;
+    });
+  }
+
+  // Función para cerrar el dropdown cuando se hace clic fuera de él
+  @HostListener('document:click', ['$event'])
+  onClick(event: MouseEvent) {
+    if (!(event.target as HTMLElement).closest('.profile')) {
+      this.showProfileMenu = false;
+    }
+  }
+
+   private setActiveMenu(menu: string) {
     this.activeMenu = menu;
   }
+
   private setActiveSection(section: string) {
     this.activeSection = section;
   }
+
   logout() {
     this.authService.logout().subscribe(response => {
       this.notificationService.showSuccess(response.message);
@@ -69,9 +88,17 @@ export class InicioAdminComponent  implements OnInit{
     this.seccion = '2';
     this.setActiveSection('Usuarios');
     this.setActiveMenu(''); 
+    console.log("Sección cambiada a:", this.seccion);
   }
 
-  
+  SeccionOfertas(event: Event){
+    event.preventDefault();
+    this.seccion = '3';
+    this.setActiveSection('Roles');
+    this.setActiveMenu(''); 
+    console.log("Sección cambiada a:", this.seccion);
+  }
+
   SeccionPerfil(event: Event) {
     event.preventDefault();
     this.setActiveMenu('profile'); // Marca el menú "Perfil" como activo

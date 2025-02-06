@@ -21,6 +21,7 @@ import { InicioAdminComponent } from './ModuloAdmin/inicio-admin/inicio-admin.co
 import { InicioGerenteComponent } from './ModuloGerente/inicio-gerente/inicio-gerente.component';
 import { InicioVentanillaComponent } from './ModuloVentanilla/inicio-ventanilla/inicio-ventanilla.component';
 import { GesUsuariosComponent } from './ModuloAdmin/ges-usuarios/ges-usuarios.component';
+import { GesRolesComponent } from './ModuloAdmin/ges-roles/ges-roles.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { GesUsuariosComponent } from './ModuloAdmin/ges-usuarios/ges-usuarios.co
     InicioGerenteComponent,
     InicioVentanillaComponent,
     GesUsuariosComponent,
+    GesRolesComponent,
   ],
   imports: [
     BrowserModule,
@@ -47,6 +49,10 @@ import { GesUsuariosComponent } from './ModuloAdmin/ges-usuarios/ges-usuarios.co
     DialogModule,
     ToastModule,
     TagModule
+  ],
+  exports:[
+    GesUsuariosComponent,
+    
   ],
   providers: [],
   bootstrap: [AppComponent]
