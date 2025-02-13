@@ -16,9 +16,17 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  console.log('Mimetype recibido:', file.mimetype); // Agrega esta línea para depuración
-  if (file.mimetype === 'text/x-python' || file.mimetype === 'application/x-python-code' || file.mimetype === 'application/octet-stream') {
-    cb(null, true); // Aceptar el archivo
+  console.log('Mimetype recibido:', file.mimetype); // Depuración
+
+  const allowedTypes = [
+    'text/x-python',
+    'application/x-python-code',
+    'application/octet-stream',
+    'text/plain', // Algunos navegadores envían archivos .py como text/plain
+  ];
+
+  if (allowedTypes.includes(file.mimetype) || file.originalname.endsWith('.py')) {
+    cb(null, true);
   } else {
     cb(new Error('Formato de archivo no soportado. Solo se aceptan archivos .py.'), false);
   }
@@ -63,6 +71,11 @@ router.post('/', upload.single('contenido'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'Es necesario subir un archivo .py.' });
+    }
+
+    const usuario = await db.tb_usuarios.findByPk(id_usuario_creador);
+    if (!usuario) {
+        return res.status(404).json({ message: 'El usuario creador no existe.' });
     }
 
     const nuevaVersion = await db.tb_versiones_modelos.create({
@@ -126,32 +139,35 @@ router.put('/:id', upload.single('contenido'), async (req, res) => {
   try {
     // Buscar la versión existente por ID
     const versionExistente = await db.tb_versiones_modelos.findByPk(id);
-
     if (!versionExistente) {
       return res.status(404).json({ message: 'Versión de modelo no encontrada.' });
     }
 
-    // Si se sube un archivo, procesarlo
-    let nuevoContenido = versionExistente.contenido; // Mantener el archivo existente si no se sube uno nuevo
+    // Si se sube un nuevo archivo, eliminar el antiguo
+    let nuevoContenido = versionExistente.contenido;
     if (req.file) {
-      // Eliminar el archivo anterior si existe
-      if (versionExistente.contenido && fs.existsSync(versionExistente.contenido)) {
-        fs.unlinkSync(versionExistente.contenido); // Borrar el archivo antiguo
+      const rutaAnterior = versionExistente.contenido;
+      if (rutaAnterior && fs.existsSync(rutaAnterior)) {
+        try {
+          fs.unlinkSync(rutaAnterior); // Intentar eliminar el archivo anterior
+        } catch (err) {
+          console.warn("No se pudo eliminar el archivo anterior:", err);
+        }
       }
-      nuevoContenido = req.file.path; // Usar la ruta del nuevo archivo
+      nuevoContenido = req.file.path; // Usar la nueva ruta
     }
 
-    // Actualizar los datos
+    // Actualizar solo los campos proporcionados
     await versionExistente.update({
-      nombre_modelo,
-      version,
-      descripcion,
-      id_usuario_creador,
-      contenido: nuevoContenido, // Actualizamos la ruta del archivo
+      nombre_modelo: nombre_modelo || versionExistente.nombre_modelo,
+      version: version || versionExistente.version,
+      descripcion: descripcion || versionExistente.descripcion,
+      id_usuario_creador: id_usuario_creador || versionExistente.id_usuario_creador,
+      contenido: nuevoContenido, // Mantener el archivo existente si no se subió uno nuevo
     });
 
-    // Extraemos el nombre del archivo solo para la respuesta
-    const nombreArchivo = path.basename(nuevoContenido);
+    // Extraer el nombre del archivo para la respuesta
+    const nombreArchivo = nuevoContenido ? path.basename(nuevoContenido) : null;
 
     res.status(200).json({
       message: 'Versión de modelo actualizada exitosamente.',
@@ -160,12 +176,15 @@ router.put('/:id', upload.single('contenido'), async (req, res) => {
       version: versionExistente.version,
       descripcion: versionExistente.descripcion,
       id_usuario_creador: versionExistente.id_usuario_creador,
-      nombre_archivo: nombreArchivo.split('-').slice(1).join('-'), // Nombre del archivo actualizado
+      nombre_archivo: nombreArchivo ? nombreArchivo.split('-').slice(1).join('-') : null, // Si hay archivo, devolver solo su nombre
     });
+
   } catch (error) {
+    console.error("Error al actualizar modelo:", error);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;

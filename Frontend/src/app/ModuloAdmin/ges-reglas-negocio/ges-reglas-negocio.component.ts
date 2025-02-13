@@ -1,21 +1,16 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Table } from 'primeng/table';
-import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorResponse
 import { NotificationService } from '../../Servicios/notification-service.service';
 import { RolesService } from '../../Servicios/API/roles.service';
 import { UserServiceService } from '../../Servicios/API/user-service.service';
 import { lastValueFrom } from 'rxjs';
-import { NgForm } from '@angular/forms';
-import { LoginService } from '../../Servicios/login.service';
 
 @Component({
-  selector: 'app-ges-usuarios',
-  templateUrl: './ges-usuarios.component.html',
-  styleUrls: ['./ges-usuarios.component.css',
-     './../../../assets/vendor/bootstrap-icons/bootstrap-icons.css'
-  ]
+  selector: 'app-ges-reglas-negocio',
+  templateUrl: './ges-reglas-negocio.component.html',
+  styleUrls: ['./ges-reglas-negocio.component.css']
 })
-export class GesUsuariosComponent {
+export class GesReglasNegocioComponent {
   @ViewChild('dt1') table!: Table;
 
   lsListado:any=[];
@@ -41,7 +36,6 @@ export class GesUsuariosComponent {
   constructor
   (
     private serviciosRol: RolesService,
-    private servicioLog: LoginService,
     private serviciosUsuarios: UserServiceService,
     private notificationService: NotificationService,
   ) { }
@@ -82,14 +76,8 @@ export class GesUsuariosComponent {
   }
 
   async ListadoInformacion() {
-    const id_user = this.servicioLog.getUser().id_usuario;
-  
-    this.lsListado = await new Promise<any>(resolve => {
-      this.serviciosUsuarios.obtenerUsuarios().subscribe(usuarios => {
-        const usuariosFiltrados = usuarios.filter((usuario: any) => usuario.id_usuario !== id_user);
-        resolve(usuariosFiltrados);
-      });
-    });
+    this.lsListado = await new Promise<any>(resolve => this.serviciosUsuarios.obtenerUsuarios().subscribe(translated => { resolve(translated) }));
+    //console.log(this.lsListado)
   }
 
   async loadRoles() {
@@ -180,5 +168,4 @@ export class GesUsuariosComponent {
   Cancelar() {
     this.visibleEstado = false; // Cierra el modal sin eliminar
   }
-
 }

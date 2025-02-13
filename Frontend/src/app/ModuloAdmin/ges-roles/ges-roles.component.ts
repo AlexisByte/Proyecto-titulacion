@@ -3,7 +3,8 @@ import { RolesService } from '../../Servicios/API/roles.service';
 import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
-import { UrlServiciosWebService } from '../../Servicios/url-servicios-web.service';
+import { lastValueFrom } from 'rxjs';
+import { NotificationService } from '../../Servicios/notification-service.service';
 
 @Component({
   selector: 'app-ges-roles',
@@ -19,140 +20,132 @@ export class GesRolesComponent {
   visibleEstado: boolean=false;
   visibleNuevo: boolean=false;
   
-  newoferta: string  = '';
+  id_rol: number  = 0;
+  nombre: string  = '';
+  descripcion: string = '';
   objSeleccion:any="-1";
-  gc_necesarios: any;
-  fecha_inicio: Date = new Date;
-  fecha_fin: Date = new Date;
+
   seccion: string = '1';
   title = 'GreenPoint';
-  descripcion: string = 'Nada fuera de lo normal';
-  negocio: any = {};
   sidebarCollapsed = false;
-  cantidad: number = 0;
+
   lsListado: any[] = [];
-  loading: boolean = false;
 
   constructor(
-    public authService: RolesService,
     private router: Router,
-    private servicios: UrlServiciosWebService,
-    
+    private servicios: RolesService,
+    private notificationService: NotificationService, // Inyecta el servicio MatSnackBar
   ) {}
 
   async ngOnInit() {
     await this.ListadoInformacion();
-    await this.addFormValidation();
   }
 
   async ListadoInformacion() {
-    this.loading = true;
-    this.lsListado = await new Promise<any>(resolve => this.authService.ListadoRoles().subscribe(translated => { resolve(translated) }));
+    this.lsListado = await new Promise<any>(resolve => this.servicios.ListadoRoles().subscribe(translated => { resolve(translated) }));
     //console.log(this.all_ofertas)
   }
 
   ModalNuevoInformacion() {
-    this.newoferta="";
-    this.gc_necesarios=0;
-    this.fecha_inicio = new Date;
-    this.fecha_fin = new Date;
+    this.nombre="";
+    this.descripcion="";
     this.visibleNuevo = true;
   }
 
-    ModalEditarInformacion(seleccion:any) {
-      this.objSeleccion = seleccion;
-      this.newoferta = this.objSeleccion.descripcion;
-      this.gc_necesarios = this.objSeleccion.gc_necesarios;
-        this.visibleEditar = true;
-    }
+  ModalEditarInformacion(seleccion:any) {
+    this.objSeleccion = seleccion;
+    this.nombre = this.objSeleccion.nombre_rol;
+    this.descripcion = this.objSeleccion.descripcion;
+    //console.log(this.objSeleccion)
+    this.visibleEditar = true;
+  }
 
-    ModalCambiarEstado(seleccion:any) {
-      this.objSeleccion=seleccion;
-      //console.log(this.objSeleccion)
-      this.visibleEstado = true;
-    }
+  ModalCambiarEstado(seleccion:any) {
+    this.objSeleccion=seleccion;
+    this.visibleEstado = true;
+  }
 
-    async addFormValidation() {
-      setTimeout(() => {
-        const forms = document.querySelectorAll('.needs-validation');
-        Array.prototype.slice.call(forms).forEach((form: HTMLFormElement) => {
-          form.addEventListener('submit', (event: Event) => {
-              if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-              }
-            form.classList.add('was-validated');
-          }, false);
-        });
-      });
-    }
+  async RegistrarNuevo(form: any) {
 
-  async RegistrarNuevo(form: NgForm){
-    if (form.valid){ 
+    if (form.valid) { 
       try {
-        console.log("ID DE LA OFERTA:"+this.objSeleccion.ofertas_id);
-        await this.Obtener_Ofertas();
-        this.visibleNuevo =false;
-
+        const { nombre, descripcion } = form.value;  
+  
+        // Asegurar que los datos coincidan con lo que espera la API
+        const nuevoRol = { nombre_rol: nombre, descripcion };
+  
+        // Llamada al servicio y espera de la respuesta
+        const data = await lastValueFrom(this.servicios.agregarRoles(nuevoRol));
+  
+        // Verificar si la respuesta contiene un mensaje antes de mostrarlo
+        if (data?.message) {
+          this.notificationService.showSuccess(data.message);
+        }
+  
+        // Cerrar modal y actualizar listado
+        this.visibleNuevo = false;
+        this.ListadoInformacion();
+  
       } catch (error) {
-        console.error("Error al crear la oferta: ", error);
-        //this.messages1 = [{severity:'error', summary:'Error', detail: "Error al crear la oferta "}];
+        console.error("Error al crear el rol:", error);
+        this.notificationService.showError("Error al crear el rol. Intente nuevamente.");
       }
-    }else{
+    } else {
+      console.warn("Formulario inválido, revisa los campos.");
+      this.notificationService.showError("Formulario inválido. Verifique los campos.");
     }
   }
 
-  async RegistrarActualizacion(form: NgForm){
-    if (form.valid){ 
+  async RegistrarActualizacion(form: any) {
+    
+    if (form.valid) { 
       try {
-        console.log("ID DE LA OFERTA:"+this.objSeleccion.ofertas_id);
-        await this.Obtener_Ofertas();
-        this.visibleEditar =false;
-
+        const { nombre, descripcion } = form.value;  
+  
+        // Asegurar que los datos coincidan con lo que espera la API
+        const editRol = { nombre_rol: nombre, descripcion };
+        console.log(form.value+this.objSeleccion.id_rol)
+        // Llamada al servicio y espera de la respuesta
+        const data = await lastValueFrom(this.servicios.actualizarRoles(this.objSeleccion.id_rol, editRol));
+  
+        // Verificar si la respuesta contiene un mensaje antes de mostrarlo
+        if (data?.message) {
+          this.notificationService.showSuccess(data.message);
+        }
+  
+        // Cerrar modal y actualizar listado
+        this.visibleEditar = false;
+        this.ListadoInformacion();
+  
       } catch (error) {
-        //console.error("Error al actualizar la oferta: ", error);
-        //this.messages1 = [{severity:'error', summary:'Error', detail: "Error al crear la oferta "}];
+        console.error("Error al actualizar el rol:", error);
+        this.notificationService.showError("Error al actualizar el rol. Intente nuevamente.");
       }
-    }else{
+    } else {
+      console.warn("Formulario inválido, revisa los campos.");
+      this.notificationService.showError("Formulario inválido. Verifique los campos.");
     }
   }
 
-  async DesactivarOferta(){
-    //this.loading = true;
+  async Desactivar() {
     try {
-      console.log("ID DE LA OFERTA:"+this.objSeleccion.ofertas_id);
-      await this.Obtener_Ofertas();
-      this.visibleEstado=false;
+      const data = await lastValueFrom(this.servicios.eliminarRoles(this.objSeleccion.id_rol));
+  
+      if (data?.message) {
+        this.notificationService.showSuccess(data.message);
+      } else {
+        this.notificationService.showSuccess("Rol eliminado correctamente.");
+      }
+      this.visibleEstado = false;
+      this.ListadoInformacion();
     } catch (error) {
-      console.error("Error al desactivar la oferta: ", error);
-    } finally {
-      this.loading = false;
+      console.error("Error al eliminar el rol:", error);
+      this.notificationService.showError("Error al eliminar el rol. Intente nuevamente.");
     }
   }
-
-  menus: { [key: string]: boolean } = {};
-
-  toggleMenu(menu: string, event: Event) {
-    this.menus[menu] = !this.menus[menu];
-    event.stopPropagation();
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event) {
-    Object.keys(this.menus).forEach(menu => {
-      this.menus[menu] = false;
-    });
-  }
-
-
-  async Obtener_Ofertas() {
-    this.loading = true;
-    try {
-    } catch (error) {
-      console.error("Error obteniendo las ofertas: ", error);
-    } finally {
-      this.loading = false;
-    }
+  
+  Cancelar() {
+    this.visibleEstado = false; // Cierra el modal sin eliminar
   }
 
   applyFilter(event: Event) {

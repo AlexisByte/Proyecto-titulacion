@@ -146,7 +146,7 @@ router.get('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { email, contrasena, activo, rol } = req.body;
+  const { nombre,email, contrasena, activo, rol } = req.body;
 
   try {
     // Verificar si el usuario existe
@@ -172,8 +172,12 @@ router.put('/:id', async (req, res) => {
     // Actualizar el estado de "activo" solo si se proporciona
     const nuevoActivo = activo !== undefined ? activo : usuario.activo;
 
+    // **Verificar si el nombre es diferente al actual antes de actualizar**
+    const nuevoNombre = nombre && nombre !== usuario.nombre ? nombre : usuario.nombre;
+
     // Actualizar el usuario con los campos proporcionados
     await usuario.update({
+      nombre: nuevoNombre, // Solo se actualiza si es distinto
       email: email || usuario.email, // Si no se envía email, usar el actual
       contrasena: nuevaContrasena,
       activo: nuevoActivo,

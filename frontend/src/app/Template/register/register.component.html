@@ -35,9 +35,8 @@
 
                 <div class="form-group">
                     <label for="role">Seleccione un rol</label>
-                    <select id="role" required [(ngModel)]="rol"
->
-                        <option [defaultSelected]="" disabled>Seleccionar rol...</option>
+                    <select id="role" required [(ngModel)]="rol">
+                        <option value="0" disabled>Seleccionar rol...</option>
                         <option *ngFor="let rol of roles" [value]="rol.id_rol">{{ rol.nombre_rol }}</option>
                     </select>
                 </div>

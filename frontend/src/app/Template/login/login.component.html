@@ -27,7 +27,8 @@
                         id="email"
                         [(ngModel)]="email"
                         placeholder="Ingrese su correo" 
-                        required #emailInput="ngModel" 
+                        required
+                        #emailInput="ngModel" 
                         pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
                     </div>
                     <div *ngIf="emailInput.invalid && emailInput.touched" class="invalid-feedback">Por favor, ingrese su correo electrónico.</div>
@@ -40,7 +41,8 @@
                         [type]="showPassword ? 'text' : 'password'" 
                         id="password" 
                         name="password"  
-                        placeholder="Ingrese su contraseña"                         pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$" 
+                        placeholder="Ingrese su contraseña"                         
+                        pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$" 
                         minlength="8" maxlength="32"
                         [(ngModel)]="password" 
                         required 
@@ -50,7 +52,7 @@
                             <i class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</i>
                         </span>                        
                     </div>
-                    <div *ngIf="passwordInput.invalid && passwordInput.touched" class="invalid-feedback">Por favor, ingrese su contraseña.</div>
+                    <div *ngIf="passwordInput.invalid && passwordInput.touched" class="invalid-feedback">La contraseña debe tener 8-32 caracteres, incluir mayúsculas, minúsculas, números y símbolos.</div>
                 </div>
 
                 <div class="form-check">
@@ -58,7 +60,7 @@
                     <label for="remember">Recuérdame</label>
                 </div>
 
-                <button type="submit" class="btn-primary" [disabled]="form.invalid" >Iniciar Sesión</button>
+                <button type="submit" class="btn-primary" >Iniciar Sesión</button>
             </form>
 
             <div class="auth-footer">

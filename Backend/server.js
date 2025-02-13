@@ -47,6 +47,7 @@ app.use('/api/reglas-negocio', verificarToken, require('./routes/reglas_negocios
 app.use('/api/modelosIA', verificarToken, require('./routes/modelos'));
 app.use('/api/reportes', verificarToken, require('./routes/reportes'));
 app.use('/api/evaluaciones', verificarToken, require('./routes/evaluaciones'));
+app.use('/api', verificarToken, require('./routes/password'));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

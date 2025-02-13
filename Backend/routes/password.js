@@ -6,147 +6,95 @@ const { Op } = require('sequelize');
 const { sendResetEmail } = require('../utils/email');
 const router = express.Router();
 
-router.post('/recuperar-password', async (req, res) => {
-  const { email } = req.body;
-  console.log("VERIFICAR "+ email)
-  const user = await db.tb_credenciales.findOne({ where: { correo_electronico : email } });
+const passwordResetTokens = new Map(); // Almacena los tokens en memoria
 
-  if (!user) {
-    return res.status(404).json({ error: 'Usuario no encontrado' });
+// Ruta para solicitar un código de recuperación
+router.post('/recuperar-clave', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'El correo electrónico es obligatorio.' });
   }
 
-  const token = crypto.randomBytes(3).toString('hex'); // Código de 6 caracteres
-  user.resetToken = token;
-  user.resetTokenExpires = Date.now() + 3600000; // Código válido por 1 hora
-  await user.save();
+  const user = await db.tb_usuarios.findOne({ where: { email } });
 
-  //const resetLink = `http://localhost:4200/reset-password?token=${token}&email=${email}`;
+  if (!user) {
+    return res.status(200).json({ message: 'Si el correo es válido, se enviará un código de recuperación.' });
+  }
+
+  const token = crypto.randomInt(100000, 999999).toString(); // Código de 6 dígitos
+  passwordResetTokens.set(email, { token, expires: Date.now() + 600000 });
+
+  setTimeout(() => passwordResetTokens.delete(email), 600000); // Eliminar token después de 10 min
+
   await sendResetEmail(email, token);
 
-  res.status(200).json({ message: 'Código de recuperación enviado' });
+  res.status(200).json({ message: 'Si el correo es válido, se enviará un código de recuperación.' });
 });
 
-//module.exports = router;
+  
+// Ruta para cambiar la contraseña con la contraseña actual
+router.post('/cambiar-clave', async (req, res) => {
+  const { email, currentPassword, newPassword } = req.body;
 
-router.post('/validate-token', async (req, res) => {
-    console.log("AQUI");
-    const { token, correo_electronico } = req.body;
-    if (!token || !correo_electronico) {
-        return res.status(400).json({ error: 'El campo token y correo_electronico son obligatorios' });
-      }
-    const user = await db.tb_credenciales.findOne({
-      where: {
-        correo_electronico,
-        resetToken: token,
-        resetTokenExpires: {
-          [Op.gt]: Date.now()
-        }
-      }
-    });
-  
+  if (!email || !currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios.' });
+  }
+
+  try {
+    const user = await db.tb_usuarios.findOne({ where: { email } });
+
     if (!user) {
-      return res.status(400).json({ error: 'Código inválido o expirado' });
+      return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
-  
-    res.status(200).json({ message: 'Código válido' });
-  });
-  
-  router.post('/reset-password', async (req, res) => {
-    const { password, token, correo_electronico } = req.body;
-    const user = await db.tb_credenciales.findOne({
-      where: {
-        correo_electronico,
-        resetToken: token,
-        resetTokenExpires: {
-          [Op.gt]: Date.now()
-        }
-      }
-    });
-  
-    if (!user) {
-      return res.status(400).json({ error: 'Código inválido o expirado' });
+
+    const isMatch = await bcrypt.compare(currentPassword, user.contrasena);
+
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Contraseña actual incorrecta.' });
     }
-  
-    //const bcrypt = require('bcryptjs');
-    const hashedPassword = await bcrypt.hash(password, 10);
-  
-    user.contrasena  = hashedPassword;
-    user.resetToken = null;
-    user.resetTokenExpires = null;
+
+    user.contrasena = await bcrypt.hash(newPassword, 10);
     await user.save();
+
+    res.status(200).json({ message: 'Contraseña actualizada con éxito.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al cambiar la contraseña.' });
+  }
+});
   
-    res.status(200).json({ message: 'Contraseña restablecida' });
-  });
-  
-  router.post('/cambiar-password', async (req, res) => {
-    const { correo_electronico, currentPassword, newPassword } = req.body;
-  
-    // Verificar que se han proporcionado todos los campos necesarios
-    if (!correo_electronico || !currentPassword || !newPassword) {
-      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+// Ruta para restablecer la contraseña con código de recuperación
+router.post('/restablecer-clave', async (req, res) => {
+  const { email, token, newPassword } = req.body;
+
+  if (!email || !token || !newPassword) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios.' });
+  }
+
+  const storedTokenData = passwordResetTokens.get(email);
+
+  if (!storedTokenData || storedTokenData.token !== token || storedTokenData.expires < Date.now()) {
+    return res.status(400).json({ error: 'El código es inválido o ha expirado.' });
+  }
+
+  try {
+    const user = await db.tb_usuarios.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
-  
-    try {
-      // Buscar el usuario en la base de datos
-      const user = await db.tb_credenciales.findOne({ where: { correo_electronico } });
-  
-      // Verificar si el usuario existe
-      if (!user) {
-        return res.status(404).json({ error: 'Usuario no encontrado' });
-      }
-  
-      // Comparar la contraseña actual proporcionada con la almacenada en la base de datos
-      const isMatch = await bcrypt.compare(currentPassword, user.contrasena);
-  
-      // Si las contraseñas no coinciden, devolver un error
-      if (!isMatch) {
-        return res.status(400).json({ error: 'Contraseña actual incorrecta' });
-      }
-  
-      // Hashear la nueva contraseña antes de guardarla
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-  
-      // Actualizar la contraseña en la base de datos
-      user.contrasena = hashedPassword;
-      await user.save();
-  
-      // Devolver una respuesta de éxito
-      res.status(200).json({ message: 'Contraseña actualizada con éxito' });
-    } catch (error) {
-      // Manejar cualquier error que ocurra durante el proceso
-      console.error(error);
-      res.status(500).json({ error: 'Error al cambiar la contraseña' });
-    }
-  });
-  
+
+    passwordResetTokens.delete(email); // Eliminar el token antes de cambiar la contraseña
+
+    user.contrasena = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.status(200).json({ message: 'Contraseña actualizada con éxito.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al cambiar la contraseña.' });
+  }
+});
+
   module.exports = router;
-/*
-router.post('/reset-password', async (req, res) => {
-    const { password, token, email } = req.body;
-    const user = await db.tb_credenciales.findOne({
-      where: {
-        correo_electronico : email,
-        resetToken: token,
-        resetTokenExpires: {
-          [Op.gt]: Date.now()
-        }
-      }
-    });
-  
-    if (!user) {
-      return res.status(400).json({ error: 'Código inválido o expirado' });
-    }
-  
-    // Hashea la nueva contraseña antes de guardarla
-    const bcrypt = require('bcryptjs');
-    const hashedPassword = await bcrypt.hash(password, 10);
-  
-    user.correo_electronico = hashedPassword;
-    user.resetToken = null;
-    user.resetTokenExpires = null;
-    await user.save();
-  
-    res.status(200).json({ message: 'Contraseña restablecida' });
-  });
-  
-  module.exports = router;*/

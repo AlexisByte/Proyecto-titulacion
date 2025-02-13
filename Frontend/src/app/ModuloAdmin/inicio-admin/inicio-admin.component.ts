@@ -2,6 +2,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit,HostListener} from '@angular/core';
 import { NotificationService } from '../../Servicios/notification-service.service';
 import { LoginService } from '../../Servicios/login.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-inicio-admin',
@@ -30,11 +31,14 @@ export class InicioAdminComponent  implements OnInit{
   ) {}
 
   ngOnInit(): void {
-    this.dato = this.authService.getUser(); // Obtiene la información del usuario al inicializar el componente
+    this.loadUserData()
     this.collapsed = !this.collapsed;
 
   }
-
+  async loadUserData(): Promise<void> {
+    this.dato = await lastValueFrom(this.authService.getUser()); // 🔥 Convertimos el Observable en una Promise
+    //console.log(this.user);
+  }
   toggleSidebar() {
     this.sidebarCollapsed = !this.sidebarCollapsed;
   }
@@ -88,17 +92,31 @@ export class InicioAdminComponent  implements OnInit{
     this.seccion = '2';
     this.setActiveSection('Usuarios');
     this.setActiveMenu(''); 
-    console.log("Sección cambiada a:", this.seccion);
+    //console.log("Sección cambiada a:", this.seccion);
   }
 
-  SeccionOfertas(event: Event){
+  SeccionRoles(event: Event){
     event.preventDefault();
     this.seccion = '3';
     this.setActiveSection('Roles');
     this.setActiveMenu(''); 
-    console.log("Sección cambiada a:", this.seccion);
+    //console.log("Sección cambiada a:", this.seccion);
   }
 
+  SeccionModelos(event: Event){
+    event.preventDefault();
+    this.seccion = '4';
+    this.setActiveSection('Modelos');
+    this.setActiveMenu(''); 
+    //console.log("Sección cambiada a:", this.seccion);
+  }
+  SeccionReglas(event: Event){
+    event.preventDefault();
+    this.seccion = '5';
+    this.setActiveSection('Reglas');
+    this.setActiveMenu(''); 
+    //console.log("Sección cambiada a:", this.seccion);
+  }
   SeccionPerfil(event: Event) {
     event.preventDefault();
     this.setActiveMenu('profile'); // Marca el menú "Perfil" como activo

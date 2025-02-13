@@ -7,8 +7,8 @@ import { catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class RolesService {
-  private apiUrl = 'http://localhost:5000/api/roles';
+export class ReglasNegocioService {
+  private apiUrl = 'http://localhost:5000/api/reglas-negocio';
 
   constructor(
     private http: HttpClient,
@@ -23,14 +23,14 @@ export class RolesService {
     });
   }
 
-  obtenerRoles(): Observable<any> {
+  obtenerReglas(): Observable<any> {
     return this.http.get<any>(this.apiUrl, { headers: this.getHeaders() });
   }
-  ListadoRoles() {
+  ListadoReglas() {
     return this.http.get<any[]>(this.apiUrl)
   }
 
-  agregarRoles(usuario: { nombre_rol: string; descripcion: string }): Observable<any> {
+  agregarReglas(usuario: { nombre_rol: string; descripcion: string }): Observable<any> {
     return this.http.post(this.apiUrl, usuario, { headers: this.getHeaders() }).pipe(
       catchError((error) => {
         console.error('Error al agregar rol:', error);
@@ -39,7 +39,7 @@ export class RolesService {
     );
   }
 
-  actualizarRoles(id_rol: number, usuario: { nombre_rol: string; descripcion: string }): Observable<any> {
+  actualizarReglas(id_rol: number, usuario: { nombre_rol: string; descripcion: string }): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id_rol}`, usuario, { headers: this.getHeaders() }).pipe(
       catchError((error) => {
         console.error('Error al actualizar rol:', error);
@@ -48,7 +48,7 @@ export class RolesService {
     );
   }
 
-  eliminarRoles(id: number): Observable<any> {
+  eliminarReglas(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 }

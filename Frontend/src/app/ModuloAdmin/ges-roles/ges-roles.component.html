@@ -6,10 +6,6 @@
     
     <div class="card">
 
-        <div class="filter">
-          <a class="icon" data-bs-toggle="dropdown" (click)="toggleMenu('menu4', $event)" role="button"><i class="bi bi-three-dots"></i></a>
-        </div>
-
         <div class="card-body">
           <h5 class="card-title"> Roles</h5>
           <!-- Tabla de todas las ofertas -->
@@ -22,7 +18,7 @@
             [rowsPerPageOptions]="[10, 25, 50]"
             [paginator]="true"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [globalFilterFields]="['nombre_rol', 'descripcion']"
+            [globalFilterFields]="['id_rol','nombre_rol', 'descripcion']"
             [scrollable]="true"
             scrollHeight="500px"
             [tableStyle]="{ 'min-width': '40rem' }"
@@ -110,45 +106,41 @@
           </ng-template>
           <ng-template pTemplate="content">
             
-            <form #newOfertaform="ngForm" (ngSubmit)="RegistrarNuevo(newOfertaform)" class="row g-3 needs-validation" novalidate style="margin-top: 0px;">
+            <form #form="ngForm" (ngSubmit)="RegistrarNuevo(form)" class="row g-3 needs-validation" novalidate style="margin-top: 0px;">
 
-              <div class="col-12 form-group" style="margin-top: -10px;">
-                <label for="newoferta" class="form-label" style="font-size: 14px;">Oferta nueva</label>
+                <label for="nombre" class="form-label" >Rol nuevo:</label>
                 <div class="input-group has-validation">
-                  <input type="text" [(ngModel)]="newoferta" name="newoferta" class="form-control" id="newoferta" required style="font-size: 13px;" placeholder="Descripcion de la oferta">
-                  <div class="invalid-feedback floating-invalid-feedback">Debes ingresar un correo electrónico!</div>
+                  <input type="text" 
+                  [(ngModel)]="nombre" 
+                  name="nombre" class="form-control" 
+                  id="nombre" required 
+                  placeholder="Nombre del nuevo rol"
+                  #nombreInput="ngModel"
+                  minlength="10"
+                  >
                 </div>
-              </div>
+                <div *ngIf="nombreInput.invalid && nombreInput.touched" class="invalid-feedback">
+                  Por favor, ingrese su nuevo rol.
+                </div>
 
-              <div class="col-12 form-group" style="margin-top: -10px;">
-                <label for="fecha_inicio" class="form-label" style="font-size: 14px;">Fecha inicio de la oferta</label>
+                <label for="descripcion" class="form-label" style="font-size: 14px;">Descripcion:</label>
                 <div class="input-group has-validation">
-                  <input type="datetime-local" name="fecha_inicio" [(ngModel)]="fecha_inicio" class="form-control" id="fecha_inicio" required style="font-size: 13px;">
-                  <div class="invalid-feedback floating-invalid-feedback">Ingresa una fecha de creación válida.</div>
+                  <input type="text" [(ngModel)]="descripcion" 
+                  name="descripcion" class="form-control"   
+                  id="descripcion" required 
+                  #descripcionInput="ngModel"
+                  placeholder="Descripcion del rol"
+                  minlength="100"
+                  >
                 </div>
-              </div>
-
-              <div class="col-12 form-group" style="margin-top: -10px;">
-                <label for="fecha_fin" class="form-label" style="font-size: 14px;">Fecha fin de la oferta</label>
-                <div class="input-group has-validation">
-                  <input type="datetime-local" name="fecha_fin" [(ngModel)]="fecha_fin" class="form-control" id="fecha_fin" required style="font-size: 13px;">
-                  <div class="invalid-feedback floating-invalid-feedback">Ingresa una fecha de creación válida.</div>
+                <div class="invalid-feedback" *ngIf="descripcionInput.invalid && descripcionInput.touched">
+                  Minimo 100 caracteres
                 </div>
-              </div>
 
-              <div class="col-12 form-group" style="margin-top: -10px;">
-                  <label for="gc_necesarios" class="form-label" style="font-size: 14px;">Costo en GreenCoins</label>
-                  <div class="input-group has-validation">
-                    <input type="number" [(ngModel)]="gc_necesarios" name="gc_necesarios" class="form-control"   id="gc_necesarios" required style="font-size: 13px;" min="1" max="1000" >
-                    <div class="invalid-feedback floating-invalid-feedback">Debes ingresar una cantidad reciclada valida (min 1 - max 1000)!</div>
-                  </div>
-              </div>
-              
               <div class="col-12 d-flex justify-content-center mt-3">
-                <button class="btn btn-primary w-50" type="submit">Registrar</button>
+                <button class="btn btn-primary w-50" type="submit" [disabled]="form.invalid">Registrar</button>
               </div>
             </form>
-
           </ng-template>
         
           
@@ -168,42 +160,37 @@
           </ng-template>
           
           <ng-template pTemplate="content">
-            <form #newOfertaform="ngForm" (ngSubmit)="RegistrarActualizacion(newOfertaform)" class="row g-3 needs-validation" novalidate style="margin-top: 0px;">
+            <form #form="ngForm" (ngSubmit)="RegistrarActualizacion(form)" class="row g-3 needs-validation" novalidate style="margin-top: 0px;">
 
-              <div class="col-12 form-group" style="margin-top: -10px;">
-                <label for="newoferta" class="form-label" style="font-size: 14px;">Oferta nueva</label>
-                <div class="input-group has-validation">
-                  <input type="text" [(ngModel)]="newoferta" name="newoferta" class="form-control" id="newoferta" required style="font-size: 13px;" placeholder="Descripcion de la oferta">
-                  <div class="invalid-feedback floating-invalid-feedback">Debes ingresar un correo electrónico!</div>
+              <label for="nombre" class="form-label" >Nombre del rol:</label>
+                <div class="input-group has-validation  ms-3">
+                  <input type="text" [(ngModel)]="nombre" 
+                  name="nombre" class="form-control" 
+                  id="nombre" required 
+                  placeholder="Nombre del nuevo rol"
+                  #nombreInput="ngModel"
+                  >
                 </div>
-              </div>
-
-              <div class="col-12 form-group" style="margin-top: -10px;">
-                <label for="fecha_inicio" class="form-label" style="font-size: 14px;">Fecha inicio de la oferta</label>
-                <div class="input-group has-validation">
-                  <input type="datetime-local" name="fecha_inicio" [(ngModel)]="fecha_inicio" class="form-control" id="fecha_inicio" required style="font-size: 13px;">
-                  <div class="invalid-feedback floating-invalid-feedback">Ingresa una fecha de creación válida.</div>
+                <div class="invalid-feedback" *ngIf="nombreInput.invalid && nombreInput.touched">
+                  Debes ingresar un nombre valido!
                 </div>
-              </div>
 
-              <div class="col-12 form-group" style="margin-top: -10px;">
-                <label for="fecha_fin" class="form-label" style="font-size: 14px;">Fecha fin de la oferta</label>
-                <div class="input-group has-validation">
-                  <input type="datetime-local" name="fecha_fin" [(ngModel)]="fecha_fin" class="form-control" id="fecha_fin" required style="font-size: 13px;">
-                  <div class="invalid-feedback floating-invalid-feedback">Ingresa una fecha de creación válida.</div>
+                <label for="descripcion" class="form-label" >Descripcion:</label>
+                <div class="input-group has-validation  ms-3">
+                  <input type="text" 
+                  [(ngModel)]="descripcion" 
+                  name="descripcion" class="form-control"   
+                  id="descripcion" required 
+                  placeholder="Descripcion del rol"
+                  #descripcionInput="ngModel"
+                  >
                 </div>
-              </div>
+                <div class="invalid-feedback" *ngIf="descripcionInput.invalid && descripcionInput.touched">
+                  Debes ingresar una descripcion valida!
+                </div>
 
-              <div class="col-12 form-group" style="margin-top: -10px;">
-                  <label for="gc_necesarios" class="form-label" style="font-size: 14px;">Costo en GreenCoins</label>
-                  <div class="input-group has-validation">
-                    <input type="number" [(ngModel)]="gc_necesarios" name="gc_necesarios" class="form-control"   id="gc_necesarios" required style="font-size: 13px;" min="1" max="1000" >
-                    <div class="invalid-feedback floating-invalid-feedback">Debes ingresar una cantidad reciclada valida (min 1 - max 1000)!</div>
-                  </div>
-              </div>
-              
-              <div class="col-12" style="margin-top: 10px;">
-                <button class="btn btn-primary w-100" type="submit">Actualizar</button>
+              <div class="col-12 d-flex justify-content-center mt-3">
+                <button class="btn btn-primary w-50" type="submit" [disabled]="form.invalid">Actualizar</button>
               </div>
             </form>
           </ng-template>
@@ -212,40 +199,55 @@
 
 
           <p-dialog
-            header="Eliminar oferta"
+            header="Eliminar Rol"
             [(visible)]="visibleEstado"
             [modal]="true"
             [style]="{ width: '50vw', minWidth: '300px', maxWidth: '80vw' }"
             [draggable]="false"
             [resizable]="true"
           >
-          
-          <ng-template pTemplate="content" >
-            <span class="text-xl " style="margin-top: 75px;">¿Estas seguro de eliminar esta oferta?</span> 
-          </ng-template>
-          
-          <ng-template pTemplate="footer">
-            <p-button icon="pi pi-save"  label="Eliminar" styleClass="p-button-sm" (click)="DesactivarOferta()"></p-button>
-          </ng-template>
-          
+            <ng-template pTemplate="content">
+              <div class="col-12 form-group">
+                <div class="input-group has-validation  ms-3">
+                  <input
+                    type="text"
+                    [(ngModel)]="objSeleccion.nombre_rol"
+                    name="nombre"
+                    class="form-control"
+                    id="nombre"
+                    readonly
+                  />
+                </div>
+                <div class="input-group has-validation  ms-3">
+                  <input
+                  type="text"
+                  [(ngModel)]="objSeleccion.descripcion"
+                  name="descripcion"
+                  class="form-control"
+                  id="descripcion"
+                  readonly
+                />
+                </div>
+              </div>
+
+              <span class="text-xl d-block text-center mt-3">
+                ¿Estás seguro de eliminar este Rol?
+              </span>
+
+              <div class="col-12 d-flex justify-content-center mt-3 gap-3">
+                <button class="btn btn-danger w-50" (click)="Desactivar()">Eliminar</button>
+                <button class="btn btn-secondary w-50" (click)="Cancelar()">Cancelar</button>
+              </div>
+            </ng-template>
           </p-dialog>
 
+          
         </div>
 
       </div>
     
-    
-    <div class="row">
-      <!-- Left side columns -->
-      <div class="col-lg-8">
-        <div class="row">
-          <!-- Reports -->
-          <div class="col-12">
-          </div><!-- End Reports -->
-        </div>
-      </div><!-- End Left side columns -->
-    </div>
   </section>
+  
 
 
 

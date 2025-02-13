@@ -1,15 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, forkJoin, throwError } from 'rxjs';
 import { catchError, switchMap, tap, map } from 'rxjs/operators';
+import { UserServiceService } from '../Servicios/API/user-service.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
   private apiUrl = "http://localhost:5000/api";
+  private userService!: UserServiceService;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private injector: Injector
+  ) {}
+
+  private getUserService(): UserServiceService {
+    if (!this.userService) {
+      this.userService = this.injector.get(UserServiceService); // ✅ Se obtiene solo cuando es necesario
+    }
+    return this.userService;
+  }
 
   // Método de login
   login(email: string, contrasena: string): Observable<any> {
@@ -98,16 +110,42 @@ export class LoginService {
     return localStorage.getItem('token');
   }
 
-  getUser(): any {
+  getUser1(): any {
     const user = localStorage.getItem('user');
-    console.log('Retrieved user from localStorage:', user);
-        return user ? JSON.parse(user) : null; 
+    //console.log('Retrieved user from localStorage:', user);
+    return user ? JSON.parse(user) : null; 
+  }
+  
+  getUser(): any {
+    try {
+      const user = this.getUserService().obtenerUsuariosId(this.getUser1().id_usuario)
+      //console.log("Login"+user)
+
+      return user; // ✅ Se llama al servicio correctamente
+    } catch (error) {
+      console.error("Error al parsear el usuario:", error);
+      return null;
+    }
   }
 
   getRoles(): string | null {
     return localStorage.getItem('roles');
   }
+
   isAuthenticated(): boolean {
     return !!this.getToken();
   }
+
+  CambiarContrasena(email: any,currentPassword:any,newPassword:any){
+    return this.http.post<any>(`${this.apiUrl}/cambiar-clave`, { email, currentPassword, newPassword });
+  }
+
+  RecuperarContrasena(email: any){
+    return this.http.post<any>(`${this.apiUrl}/recuperar-clave`, {email });
+  }
+
+  RestablecerContrasena(email: any,token: any,newPassword:any){
+    return this.http.post<any>(`${this.apiUrl}/restablecer-clave`, {email,token,newPassword });
+  }
+
 }

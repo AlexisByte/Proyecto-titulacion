@@ -22,6 +22,9 @@ import { InicioGerenteComponent } from './ModuloGerente/inicio-gerente/inicio-ge
 import { InicioVentanillaComponent } from './ModuloVentanilla/inicio-ventanilla/inicio-ventanilla.component';
 import { GesUsuariosComponent } from './ModuloAdmin/ges-usuarios/ges-usuarios.component';
 import { GesRolesComponent } from './ModuloAdmin/ges-roles/ges-roles.component';
+import { GesModelosComponent } from './ModuloAdmin/ges-modelos/ges-modelos.component';
+import { GesReglasNegocioComponent } from './ModuloAdmin/ges-reglas-negocio/ges-reglas-negocio.component';
+import { PerfilAdminComponent } from './ModuloAdmin/perfil-admin/perfil-admin.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +38,9 @@ import { GesRolesComponent } from './ModuloAdmin/ges-roles/ges-roles.component';
     InicioVentanillaComponent,
     GesUsuariosComponent,
     GesRolesComponent,
+    GesModelosComponent,
+    GesReglasNegocioComponent,
+    PerfilAdminComponent,
   ],
   imports: [
     BrowserModule,

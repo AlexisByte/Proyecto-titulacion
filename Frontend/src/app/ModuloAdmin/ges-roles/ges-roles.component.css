@@ -1,4 +1,3 @@
-
 .floating-message {
   position: fixed;
   top: 470px; /* Ajusta según sea necesario */
@@ -1360,4 +1359,81 @@
       font-size: 13px;
       color: #012970;
     }
-    
+    .invalid-feedback{
+      color: red;
+    }
+/* Form styles */
+.form-label {
+  display: block;
+  font-weight: 500;
+  color: #333;
+  margin-left: 1rem;
+}
+.p-inputgroup {
+  margin-bottom: 0.2rem;
+  margin-left: 1rem;
+}
+
+.p-inputgroup input,
+.p-inputgroup select {
+  width: 90%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.p-inputgroup input:focus,
+.p-inputgroup select:focus {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.p-inputgroup-addon {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  border-right: none;
+  padding: 0.5rem 0.5rem;
+  color: #495057;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.p-inputgroup input,
+.p-inputgroup select {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: small;
+  color: #dc3545;
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+  padding: 0.5rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
+
+/* Form container spacing */
+.p-dialog .p-dialog-content {
+  padding: 1rem;
+}
+
+form {
+  max-width: 90%;
+}

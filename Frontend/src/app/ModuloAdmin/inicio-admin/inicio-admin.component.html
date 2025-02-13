@@ -62,13 +62,13 @@
       <li class="nav-item dropdown pe-3">
         <a class="nav-link nav-profile d-flex align-items-center pe-0" (click)="toggleMenu('profile', $event)"role="button">
           <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
-          <span class="d-none d-md-block dropdown-toggle ps-2">{{ dato?.nombre }}</span>
+          <span class="d-none d-md-block dropdown-toggle ps-2">{{ dato?.usuario.nombre }}</span>
         </a>
         <!-- End Profile Image Icon -->
       
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile"  *ngIf="menus['profile']" style="right: 15px !important; top: 45px !important;">
           <li class="dropdown-header">
-            <h6>{{ dato?.nombre }}</h6>
+            <h6>{{ dato?.usuario.nombre }}</h6>
             <span>Administrador</span>
           </li>
           <li>
@@ -118,21 +118,21 @@
           </a>
         </li>
         <li>
-          <a href=""(click)="SeccionOfertas($event)" [ngClass]="{'active': activeSection === 'Roles'}">
+          <a href=""(click)="SeccionRoles($event)" [ngClass]="{'active': activeSection === 'Roles'}">
             <i class="bi bi-circle"></i><span>Roles</span>
           </a>
         </li>
         <li>
-          <a href="" >
-            <i class="bi bi-circle"></i><span>Puntos Verdes</span>
+          <a href="" (click)="SeccionModelos($event)" [ngClass]="{'active': activeSection === 'Modelos'}">
+            <i class="bi bi-circle"></i><span>Modelos</span>
           </a>
         </li>
         <li>
-          <a href="" >
-            <i class="bi bi-circle"></i><span>Ciudadanos</span>
+          <a href="" (click)="SeccionReglas($event)" [ngClass]="{'active': activeSection === 'Reglas'}">
+            <i class="bi bi-circle"></i><span>Reglas del Negocio</span>
           </a>
         </li>
-        <li>
+        <!-- <li>
           <a href="" >
             <i class="bi bi-circle"></i><span>Negocios</span>
           </a>
@@ -141,7 +141,7 @@
           <a href="" >
             <i class="bi bi-circle"></i><span>Administradores</span>
           </a>
-        </li>
+        </li> -->
       </ul>
     </li>
     <li class="nav-heading">Páginas</li>
@@ -329,6 +329,15 @@
   </div>
   <div *ngIf="seccion === '3'">
     <app-ges-roles></app-ges-roles>
+  </div>
+  <div *ngIf="seccion === '4'">
+    <app-ges-modelos></app-ges-modelos>
+  </div>
+  <div *ngIf="seccion === '5'">
+    <app-ges-reglas-negocio></app-ges-reglas-negocio>
+  </div>
+  <div *ngIf="seccion === '8'">
+    <app-perfil-admin></app-perfil-admin>
   </div>
   <footer class="footer">
     <span style="color: rgb(0, 0, 0)">Titulacion  &copy;  2025</span>
