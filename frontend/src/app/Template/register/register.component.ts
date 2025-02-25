@@ -1,7 +1,12 @@
-import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorResponse
+import { NotificationService } from '../../Servicios/notification-service.service';
 import { RolesService } from '../../Servicios/API/roles.service';
+import { UserServiceService } from '../../Servicios/API/user-service.service';
+import { lastValueFrom } from 'rxjs';
+import { LoginService } from '../../Servicios/login.service';
 
 
 @Component({
@@ -10,15 +15,20 @@ import { RolesService } from '../../Servicios/API/roles.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  name: string = '';
-  email: string = '';
-  password: string = '';
-  remember: boolean = false;
-  rol: number = 0;
-  roles: any[] = []; // Lista de roles
-  selectedRolName: string = ''; // Nombre del rol seleccionado
+  nombre:string="";
+  email:string = '';
+  contrasena:string = '';
+  roles: any[] = [];
+  rol: number = 0; // Cambia 0 por ""
 
-  constructor(private urlServiciosWebService: RolesService) {}
+  termsAccepted: boolean = false; // Inicializar en falso
+  showPassword: boolean = false;
+
+  constructor(
+    private urlServiciosWebService: RolesService,
+    private serviciosUsuarios: UserServiceService,
+    private notificationService: NotificationService,
+  ) {}
 
   async ngOnInit() {
     this.loadRoles();
@@ -36,31 +46,31 @@ export class RegisterComponent implements OnInit {
     );
   }
   
-  addFormValidation() {
-    document.addEventListener('DOMContentLoaded', function() {
-      var forms = document.querySelectorAll('.needs-validation');
-      
-      Array.prototype.slice.call(forms)
-        .forEach(function(form) {
-          form.addEventListener('submit', function(event: Event) {
-            if (!form.checkValidity()) {
-              event.preventDefault();
-              event.stopPropagation();
-            }
-    
-            form.classList.add('was-validated');
-          }, false);
-        });
-    });
-  }
 
-  Register(form: any) {
-    if (form.valid) {
-      console.log('Formulario válido:', form.value);
-      // Lógica para enviar los datos del formulario
+  async Register(form: any) {
+    if (form.valid) {   
+      //console.log('Formulario válido:', form.value);
+      try {
+        const { nombre, email, contrasena, rol } = form.value;
+        const nuevo = { nombre, email, contrasena, rol };
+        //console.log('Formulario válido:', nuevo);
+        const data = await lastValueFrom(this.serviciosUsuarios.agregarUsuario(nuevo));
+  
+        if (data?.message) {
+          this.notificationService.showSuccess(data.message);
+        }
+      } catch (error) {
+        console.error("Error al crear el usuario:", error);
+        this.notificationService.showError("Error al crear el usuario. Intente nuevamente.");
+      }
     } else {
-      console.error('Formulario inválido');
+      //console.log('Formulario inválido:', form.value);
+      this.notificationService.showError("Ingrese todos los campos. Intente nuevamente.");
     }
   }
 
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+  
 }

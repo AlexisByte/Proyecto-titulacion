@@ -8,16 +8,18 @@ import { UserServiceService } from '../../Servicios/API/user-service.service';
 import { NotificationService } from '../../Servicios/notification-service.service';
 
 @Component({
-  selector: 'app-perfil-admin',
-  templateUrl: './perfil-admin.component.html',
-  styleUrls: ['./perfil-admin.component.css',
+  selector: 'app-perfil-gerente',
+  templateUrl: './perfil-gerente.component.html',
+  styleUrls: ['./perfil-gerente.component.css',
     "../../../assets/vendor/bootstrap-icons/bootstrap-icons.css"]
 })
-export class PerfilAdminComponent implements OnInit {
+export class PerfilGerenteComponent implements OnInit{
+
   user: any = { usuario: {} }; // Evita errores de acceso a propiedades
   email:string = '';
   editUser: any = {};
   nombre: string = '';
+
   currentPassword: string = '';
   newPassword: string = '';
   renewPassword: string = '';
@@ -95,10 +97,6 @@ export class PerfilAdminComponent implements OnInit {
   async GuardarCambiosPerfil(form: any) {
     if (form.valid) { 
       try {
-        if(this.nombre == this.editUser.usuario.nombre){
-          this.notificationService.showError("Realice algun cambio para guardar");
-          return
-        }
         const { nombre, email } = form.value;  
         const edit = { nombre, email };
   
@@ -159,5 +157,4 @@ export class PerfilAdminComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  
 }

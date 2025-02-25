@@ -134,10 +134,10 @@
       </div>
   
       <!-- Correo Electrónico -->
-      <label for="Email" class="form-label">Correo Electrónico:</label>
+      <label for="email" class="form-label">Correo Electrónico:</label>
       <div class="p-inputgroup">
         <span class="p-inputgroup-addon"><i class="pi pi-envelope"></i></span>
-        <input type="email" id="Email" name="email" placeholder="ejemplo@gmail.com"
+        <input type="email" id="email" name="email" placeholder="ejemplo@gmail.com"
           [(ngModel)]="email" #emailInput="ngModel"
           class="form-control" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required/>
       </div>
@@ -149,34 +149,39 @@
       <label for="contrasena" class="form-label">Contraseña:</label>
       <div class="p-inputgroup">
         <span class="p-inputgroup-addon"><i class="pi pi-lock"></i></span>
-        <input type="password" id="contrasena" name="contrasena"
+        <input 
+          [type]="showPassword ? 'text' : 'password'" 
+          id="contrasena" name="contrasena"
           [(ngModel)]="contrasena" #contrasenaInput="ngModel"
           placeholder="Password123*" class="form-control" 
-          pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$"
+          maxlength="32"
+          pattern="^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&]{8,32}$"
           required/>
+          <span class="toggle-password" (click)="togglePasswordVisibility()">
+            <i class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</i>
+          </span>  
       </div>
       <div class="invalid-feedback" *ngIf="contrasenaInput.invalid && contrasenaInput.touched">
         La contraseña debe tener 8-32 caracteres, incluir mayúsculas, minúsculas, números y símbolos.
       </div>
   
       <!-- Rol -->
-      <label for="negocio" class="form-label">Rol:</label>
+      <label for="rol" class="form-label">Rol:</label>
       <div class="p-inputgroup">
         <span class="p-inputgroup-addon"><i class="pi pi-users"></i></span>
-        <select id="negocio" name="rol" required [(ngModel)]="rol" #rolInput="ngModel" class="form-control">
-          <option value="" disabled selected>Seleccionar rol...</option>
+        <select id="rol" name="rol" [(ngModel)]="rol" #rolInput="ngModel" class="form-control" required>
+          <option value="" disabled>Seleccionar rol...</option> <!-- 🔥 Cambiado value="" a [value]="null" -->
           <option *ngFor="let r of roles" [value]="r.id_rol">{{ r.nombre_rol }}</option>
-        </select> 
+        </select>
       </div>
       <div class="invalid-feedback" *ngIf="rolInput.invalid && rolInput.touched">
         Selecciona un rol válido.
       </div>
-  
+
       <!-- Botón -->
       <div class="col-12 d-flex justify-content-center mt-3">
         <button class="btn btn-primary w-50" type="submit" [disabled]="form.invalid">Registrar</button>
       </div>
-  
     </form>
   </ng-template>
   

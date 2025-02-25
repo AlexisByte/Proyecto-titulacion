@@ -5,7 +5,6 @@ const db = require('./models'); // Asegúrate de que el archivo de modelos está
 const passport = require('passport');
 
 
-const recupera = require('./routes/password');
 const passportJWT = require('passport-jwt');
 const { Strategy, ExtractJwt } = passportJWT;
 
@@ -47,6 +46,8 @@ app.use('/api/reglas-negocio', verificarToken, require('./routes/reglas_negocios
 app.use('/api/modelosIA', verificarToken, require('./routes/modelos'));
 app.use('/api/reportes', verificarToken, require('./routes/reportes'));
 app.use('/api/evaluaciones', verificarToken, require('./routes/evaluaciones'));
+app.use('/api/datasets', verificarToken, require('./routes/datasets'));
+app.use('/api/resultados-entrenamiento', verificarToken, require('./routes/resultados-entrenamientos'));
 app.use('/api', verificarToken, require('./routes/password'));
 
 app.listen(PORT, () => {

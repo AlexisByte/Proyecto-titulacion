@@ -26,13 +26,13 @@ export class LoginComponent {
   
         this.loginService.login(email, password).subscribe({
           next: (response) => {
-            console.log("Response Login:", response);
+            //console.log("Response Login:", response);
             this.notificationService.showSuccess(response.message);
   
             if (response.roles && response.roles.length > 0) {
               if (response.roles.length === 1) {
                 const roleName = response.roles[0].nombre_rol; // Obtener nombre del rol
-                console.log("Nombre rol:", roleName);
+                //console.log("Nombre rol:", roleName);
                 this.router.navigate([roleName]); // Redirigir a la ruta del rol
               } else {
                 this.router.navigate(['roles']); // Si tiene más de un rol, ir a selección de roles
@@ -42,7 +42,7 @@ export class LoginComponent {
             }
           },
           error: (error) => {
-            console.log("Error en login:", error.message);
+            //console.log("Error en login:", error.message);
             this.notificationService.showError(error.message);
           }
         });

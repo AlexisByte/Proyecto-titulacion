@@ -2,6 +2,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit,HostListener} from '@angular/core';
 import { NotificationService } from '../../Servicios/notification-service.service';
 import { LoginService } from '../../Servicios/login.service';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-inicio-gerente',
@@ -27,9 +28,13 @@ export class InicioGerenteComponent implements OnInit{
   ) {}
 
   ngOnInit(): void {
-    this.dato = this.authService.getUser(); // Obtiene la información del usuario al inicializar el componente
+    this.loadUserData()
     this.collapsed = !this.collapsed;
 
+  }
+  async loadUserData(): Promise<void> {
+    this.dato = await lastValueFrom(this.authService.getUser()); // 🔥 Convertimos el Observable en una Promise
+    //console.log(this.user);
   }
 
   toggleSidebar() {

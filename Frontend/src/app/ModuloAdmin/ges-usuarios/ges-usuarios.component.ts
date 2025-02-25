@@ -30,6 +30,7 @@ export class GesUsuariosComponent {
 
   
   estado:boolean=true;
+  showPassword: boolean = false;
 
 
   strEstado:any="";
@@ -82,8 +83,8 @@ export class GesUsuariosComponent {
   }
 
   async ListadoInformacion() {
-    const id_user = this.servicioLog.getUser().id_usuario;
-  
+    const id_user = this.servicioLog.getUser1().id_usuario;
+    //console.log('Formulario válido:', id_user);
     this.lsListado = await new Promise<any>(resolve => {
       this.serviciosUsuarios.obtenerUsuarios().subscribe(usuarios => {
         const usuariosFiltrados = usuarios.filter((usuario: any) => usuario.id_usuario !== id_user);
@@ -104,26 +105,35 @@ export class GesUsuariosComponent {
   }
 
   async RegistrarNuevo(form: any) {
-    try {
-      const { nombre, email, contrasena, rol } = form.value;  
-      const nuevo = { nombre, email, contrasena, rol };
+    if (form.valid) {
+      try {
+        console.log('Formulario válido:', form.value);
+        const { nombre, email, contrasena, rol } = form.value;  
+        const nuevo = { nombre, email, contrasena, rol };
 
-      // Llamada al servicio con el objeto correcto
-      const data = await lastValueFrom(this.serviciosUsuarios.agregarUsuario(nuevo));
+        // Llamada al servicio con el objeto correcto
+        const data = await lastValueFrom(this.serviciosUsuarios.agregarUsuario(nuevo));
 
-      if (data?.message) {
-        this.notificationService.showSuccess(data.message);
+        if (data?.message) {
+          this.notificationService.showSuccess(data.message);
+        }
+
+        // Cerrar modal, actualizar lista y resetear formulario
+        this.visibleNuevo = false;
+        this.ListadoInformacion();
+        form.resetForm();
+
+      } catch (error) {
+        //console.error("Error al crear el rol:", error);
+        this.notificationService.showError("Error al crear el usuario. Intente nuevamente.");
+        console.log('Formulario inválido0:', form.value);
       }
-
-      // Cerrar modal, actualizar lista y resetear formulario
-      this.visibleNuevo = false;
-      this.ListadoInformacion();
-      form.resetForm();
-
-    } catch (error) {
-      console.error("Error al crear el rol:", error);
-      this.notificationService.showError("Error al crear el rol. Intente nuevamente.");
+    }else{
+      this.notificationService.showError("Ingrese todos los campos. Intente nuevamente.");
+      console.log('Formulario inválido:', form.value);
     }
+
+    
   }
 
   async RegistrarActualizacion(form: any) {
@@ -181,4 +191,7 @@ export class GesUsuariosComponent {
     this.visibleEstado = false; // Cierra el modal sin eliminar
   }
 
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
 }

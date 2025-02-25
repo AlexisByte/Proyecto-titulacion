@@ -23,6 +23,14 @@ export class LoginService {
     return this.userService;
   }
 
+  private getHeaders() {
+    const token = this.getToken();
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json' // Asegura que envías JSON
+    });
+  }
+
   // Método de login
   login(email: string, contrasena: string): Observable<any> {
     const body = { email, contrasena };
@@ -136,16 +144,33 @@ export class LoginService {
     return !!this.getToken();
   }
 
-  CambiarContrasena(email: any,currentPassword:any,newPassword:any){
-    return this.http.post<any>(`${this.apiUrl}/cambiar-clave`, { email, currentPassword, newPassword });
+  CambiarContrasena( email: string, currentPassword: string, newPassword: string ) {
+    return this.http.post<any>(`${this.apiUrl}/cambiar-clave`, {email,currentPassword,newPassword}, { headers: this.getHeaders()}).pipe(
+      catchError((error) => {
+        console.error("Error en CambiarContrasena:", error);
+        return throwError(() => new Error("Error al cambiar la contraseña."));
+      })
+    );
   }
 
-  RecuperarContrasena(email: any){
-    return this.http.post<any>(`${this.apiUrl}/recuperar-clave`, {email });
+  // Método para solicitar recuperación de contraseña
+  RecuperarContrasena(email: string) {
+    return this.http.post<any>(`${this.apiUrl}/recuperar-clave`, email , { headers: this.getHeaders() }).pipe(
+      catchError((error) => {
+        console.error("Error en RecuperarContrasena:", error);
+        return throwError(() => new Error("Error al recuperar la contraseña."));
+      })
+    );
   }
 
-  RestablecerContrasena(email: any,token: any,newPassword:any){
-    return this.http.post<any>(`${this.apiUrl}/restablecer-clave`, {email,token,newPassword });
+  // Método para restablecer contraseña con token
+  RestablecerContrasena(email: string, token: string, newPassword: string) {
+    return this.http.post<any>(`${this.apiUrl}/restablecer-clave`, { email,token, newPassword }, { headers: this.getHeaders() }).pipe(
+      catchError((error) => {
+        console.error("Error en RestablecerContrasena:", error);
+        return throwError(() => new Error("Error al restablecer la contraseña."));
+      })
+    );
   }
 
 }

@@ -111,14 +111,6 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Versión de modelo no encontrada.' });
     }
 
-    // Convertir el contenido del buffer a cadena si es necesario
-    let nombreArchivo = null;
-    if (version.contenido) {
-       // Extraer solo el nombre del archivo
-       const archivoCompleto = path.basename(version.contenido);
-       nombreArchivo = archivoCompleto.split('-').slice(1).join('-'); // Quitar el prefijo de la marca de tiempo
-    }
-
     res.status(200).json({
       id_version: version.id_version,
       nombre_modelo: version.nombre_modelo,
@@ -185,6 +177,24 @@ router.put('/:id', upload.single('contenido'), async (req, res) => {
   }
 });
 
+// Obtener una versión de modelo por ID con solo el nombre del archivo
+router.get('/ruta/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const version = await db.tb_versiones_modelos.findByPk(id);
+
+    if (!version) {
+      return res.status(404).json({ message: 'Versión de modelo no encontrada.' });
+    }
+
+    res.status(200).json({
+      ruta: version.contenido,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
@@ -206,6 +216,38 @@ router.delete('/:id', async (req, res) => {
     await versionExistente.destroy();
 
     res.status(200).json({ message: 'Modelo eliminado exitosamente.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Ruta para entrenar y evaluar el modelo
+router.post('/train', async (req, res) => {
+  try {
+    const { id_version } = req.body;
+    
+    const modelo = await db.tb_versiones_modelos.findByPk(id_version);
+    if (!modelo) {
+      return res.status(404).json({ error: 'Modelo no encontrado' });
+    }
+
+    // Ejecutar el script principal de IA en Python
+    const pythonProcess = spawn('python', ['../scripts/train_model.py', modelo.contenido]);
+
+    let scriptOutput = '';
+    pythonProcess.stdout.on('data', (data) => {
+      scriptOutput += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`Error en el script: ${data}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+      console.log(`Proceso finalizado con código ${code}`);
+      res.json({ mensaje: 'Entrenamiento finalizado', salida: scriptOutput });
+    });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

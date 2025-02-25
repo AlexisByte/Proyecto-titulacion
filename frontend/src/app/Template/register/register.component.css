@@ -183,3 +183,20 @@
     height: 32px;
     stroke-width: 2;
 }
+
+.invalid-feedback{
+    color: red;
+}
+
+.toggle-password {
+    cursor: pointer;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    user-select: none; /* Evita que el texto se seleccione al hacer clic */
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+}

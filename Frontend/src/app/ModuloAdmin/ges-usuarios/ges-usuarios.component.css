@@ -1437,3 +1437,11 @@
 form {
   max-width: 90%;
 }
+
+.toggle-password {
+  cursor: pointer;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  user-select: none; /* Evita que el texto se seleccione al hacer clic */
+}

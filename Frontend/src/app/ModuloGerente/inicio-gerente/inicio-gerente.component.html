@@ -62,13 +62,13 @@
       <li class="nav-item dropdown pe-3">
         <a class="nav-link nav-profile d-flex align-items-center pe-0" (click)="toggleMenu('profile', $event)"role="button">
           <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
-          <span class="d-none d-md-block dropdown-toggle ps-2">{{ dato?.nombre }}</span>
+          <span class="d-none d-md-block dropdown-toggle ps-2">{{ dato?.usuario?.nombre }}</span>
         </a>
         <!-- End Profile Image Icon -->
       
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile"  *ngIf="menus['profile']" style="right: 15px !important; top: 45px !important;">
           <li class="dropdown-header">
-            <h6>{{ dato?.nombre }}</h6>
+            <h6>{{ dato?.usuario?.nombre }}</h6>
             <span>Gerente </span>
           </li>
           <li>
@@ -336,7 +336,9 @@
   <div *ngIf="seccion === '5'">
     <app-ges-reglas-negocio></app-ges-reglas-negocio>
   </div>
-
+  <div *ngIf="seccion === '8'">
+    <app-perfil-gerente></app-perfil-gerente>
+  </div>
   <footer class="footer">
     <span style="color: rgb(0, 0, 0)">Titulacion  &copy;  2025</span>
   </footer>
