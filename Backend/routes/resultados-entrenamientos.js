@@ -6,15 +6,7 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 
 router.post('/entrenamiento', async (req, res) => {
-    let { id_version, id_dataset, k_features } = req.body;
-
-    // Convertir k_features a número (por si llega como string)
-    k_features = parseInt(k_features);
-
-    // Validar que k_features sea un número entero positivo
-    if (!Number.isInteger(k_features) || k_features <= 2) {
-        return res.status(400).json({ message: 'Debe ser un número entero positivo mayor a 2.' });
-    }
+    let { id_version, id_dataset, skip_columns } = req.body;
 
     try {
         // Verificar existencia de los registros
@@ -26,7 +18,7 @@ router.post('/entrenamiento', async (req, res) => {
         // Obtener rutas del modelo y dataset
         let modeloRuta, datasetRuta;
         try {
-            const modeloRutaResponse = await axios.get(`http://localhost:3000/api/modelosIA/ruta/${id_version}`, {
+            const modeloRutaResponse = await axios.get(`http://localhost:5000/api/modelosIA/ruta/${id_version}`, {
                 headers: { Authorization: req.headers.authorization } // Reenvía el token recibido
             });
             modeloRuta = modeloRutaResponse.data.ruta;
@@ -36,7 +28,7 @@ router.post('/entrenamiento', async (req, res) => {
         }
 
         try {
-            const datasetRutaResponse = await axios.get(`http://localhost:3000/api/datasets/ruta/${id_dataset}`, {
+            const datasetRutaResponse = await axios.get(`http://localhost:5000/api/datasets/ruta/${id_dataset}`, {
                 headers: { Authorization: req.headers.authorization } // Pasar el token también aquí
             });
             datasetRuta = datasetRutaResponse.data.ruta;
@@ -50,7 +42,7 @@ router.post('/entrenamiento', async (req, res) => {
         if (!fs.existsSync(datasetRuta)) return res.status(400).json({ message: 'El archivo del dataset no existe en la ruta especificada.' });
 
         // Ejecutar script de Python
-        const pythonProcess = spawn('python', [modeloRuta, datasetRuta, String(k_features)]);
+        const pythonProcess = spawn('python', [modeloRuta, datasetRuta, String(skip_columns)]);
 
         let resultadoPython = '';
         let errorPython = '';
@@ -76,13 +68,13 @@ router.post('/entrenamiento', async (req, res) => {
 
             try {
                 const resultados = JSON.parse(resultadoPython.trim());
-
-                if (!resultados.fp || !resultados.fn || !resultados.precision || !resultados.exactitud || !resultados.recall) {
+                console.log(resultados)
+                if (!resultados.matriz_confusion || !resultados.precision || !resultados.exactitud || !resultados.recall) {
                     return res.status(500).json({ message: 'Resultados del entrenamiento inválidos.' });
                 }
 
                 // Guardar en la base de datos
-                const nuevoResultado = await db.tb_resultados_entrenamiento.create({
+                /*const nuevoResultado = await db.tb_resultados_entrenamiento.create({
                     id_version,
                     id_dataset,
                     fp: resultados.fp,
@@ -91,9 +83,9 @@ router.post('/entrenamiento', async (req, res) => {
                     exactitud: resultados.exactitud,
                     recall: resultados.recall,
                     fecha_entrenamiento: new Date(),
-                });
+                });*/
 
-                res.status(201).json({ message: 'Entrenamiento completado.', resultado: nuevoResultado });
+                res.status(201).json({ message: 'Entrenamiento completado.', resultados });
             } catch (error) {
                 console.error('Error procesando resultados:', error);
                 res.status(500).json({ message: 'Error procesando resultados del entrenamiento.' });

@@ -72,10 +72,16 @@ module.exports = (sequelize, DataTypes) => {
       as: 'reglasCreadas'
     });
 
-    // Relación con Auditorias (Uno a Muchos)
-    Usuarios.hasMany(models.tb_auditorias, {
+    // Relación con Actividades (Uno a Muchos)
+    Usuarios.hasMany(models.tb_actividad, {
       foreignKey: 'id_usuario',
-      as: 'auditorias'
+      as: 'actividades'
+    });
+    
+    // Relación con Datasets (Uno a Muchos)
+    Usuarios.hasMany(models.tb_datasets, {
+      foreignKey: 'id_usuario_creador',
+      as: 'datasetsCreados'
     });
   };
 

@@ -156,5 +156,4 @@ if __name__ == "__main__":
         print(ruta_procesada)
     except Exception as e:
         print(f"ERROR: {str(e)}")
-        logging.error(f"Error en el procesamiento: {str(e)}", exc_info=True)
         sys.exit(1)
