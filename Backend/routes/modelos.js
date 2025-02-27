@@ -37,6 +37,20 @@ const upload = multer({
   fileFilter,
 });
 
+// Registro de actividad
+const logActivity = async (action, details, userId) => {
+  try {
+    await db.tb_actividad.create({
+      accion: action,
+      detalles: details,
+      id_usuario: userId,
+      fecha: new Date()
+    });
+  } catch (error) {
+    console.error('Error al registrar actividad:', error);
+  }
+};
+
 router.get('/', async (req, res) => {
   try {
     // Obtener todas las versiones de modelo

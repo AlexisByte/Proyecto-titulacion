@@ -2,6 +2,20 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 
+// Registro de actividad
+const logActivity = async (action, details, userId) => {
+  try {
+    await db.tb_actividad.create({
+      accion: action,
+      detalles: details,
+      id_usuario: userId,
+      fecha: new Date()
+    });
+  } catch (error) {
+    console.error('Error al registrar actividad:', error);
+  }
+};
+
 // Obtener todos los roles
 router.get('/', async (req, res) => {
   try {

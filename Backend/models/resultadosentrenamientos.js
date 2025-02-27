@@ -13,12 +13,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        fp: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        fn: {
-            type: DataTypes.INTEGER,
+        matriz_confusion: {
+            type: DataTypes.JSON,
             allowNull: false
         },
         precision: {
@@ -30,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         recall: {
+            type: DataTypes.FLOAT,
+            allowNull: false
+        },
+        f1_score: {
             type: DataTypes.FLOAT,
             allowNull: false
         },

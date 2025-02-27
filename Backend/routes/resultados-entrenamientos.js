@@ -68,24 +68,23 @@ router.post('/entrenamiento', async (req, res) => {
 
             try {
                 const resultados = JSON.parse(resultadoPython.trim());
-                console.log(resultados)
+                console.log("Resultados: "+resultados)
                 if (!resultados.matriz_confusion || !resultados.precision || !resultados.exactitud || !resultados.recall) {
                     return res.status(500).json({ message: 'Resultados del entrenamiento inválidos.' });
                 }
 
                 // Guardar en la base de datos
-                /*const nuevoResultado = await db.tb_resultados_entrenamiento.create({
+                const nuevoResultado = await db.tb_resultados_entrenamiento.create({
                     id_version,
                     id_dataset,
-                    fp: resultados.fp,
-                    fn: resultados.fn,
+                    matriz_confusion: resultados.matriz_confusion,
                     precision: resultados.precision,
                     exactitud: resultados.exactitud,
                     recall: resultados.recall,
-                    fecha_entrenamiento: new Date(),
-                });*/
+                    f1_score: resultados.f1_score
+                });
 
-                res.status(201).json({ message: 'Entrenamiento completado.', resultados });
+                res.status(201).json({ message: 'Entrenamiento completado.', resultado: nuevoResultado });
             } catch (error) {
                 console.error('Error procesando resultados:', error);
                 res.status(500).json({ message: 'Error procesando resultados del entrenamiento.' });
@@ -95,6 +94,47 @@ router.post('/entrenamiento', async (req, res) => {
     } catch (error) {
         console.error('Error en el entrenamiento:', error);
         res.status(500).json({ message: 'Error interno del servidor.' });
+    }
+});
+
+// Obtener todos los resultados de entrenamiento
+router.get('/', async (req, res) => {
+    try {
+        const resultados = await db.tb_resultados_entrenamiento.findAll();
+        return res.status(200).json(resultados);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al obtener los resultados', error: error.message });
+    }
+});
+
+// Obtener un resultado específico por ID
+router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const resultado = await db.tb_resultados_entrenamiento.findByPk(id);
+        if (resultado) {
+            return res.status(200).json(resultado);
+        } else {
+            return res.status(404).json({ message: `No se encontró el resultado con ID: ${id}` });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al obtener el resultado', error: error.message });
+    }
+});
+
+// Eliminar un resultado de entrenamiento por ID
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const resultado = await db.tb_resultados_entrenamiento.findByPk(id);
+        if (resultado) {
+            await resultado.destroy();
+            return res.status(200).json({ message: `Resultado con ID: ${id} eliminado correctamente.` });
+        } else {
+            return res.status(404).json({ message: `No se encontró el resultado con ID: ${id}` });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al eliminar el resultado', error: error.message });
     }
 });
 

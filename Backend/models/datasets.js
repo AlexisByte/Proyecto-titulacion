@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true
         },
         archivo: {
-            type: DataTypes.STRING, // Ruta o URL del dataset almacenado
+            type: DataTypes.TEXT, // Ruta o URL del dataset almacenado
             allowNull: false
         },
         id_usuario_creador: {
