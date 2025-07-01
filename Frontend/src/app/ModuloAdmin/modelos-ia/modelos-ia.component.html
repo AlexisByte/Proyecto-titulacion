@@ -1,0 +1,196 @@
+<div class="pagetitle">
+  <h1>Modelos IA Entrenados</h1>
+</div>
+<section class="section dashboard">
+  <div class="card separador-componentes">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Modelos IA</h5>
+        <p-table
+          #dt1
+          [value]="lsListado"
+          dataKey="id_resultado"
+          [rows]="10"
+          [showCurrentPageReport]="true"
+          [rowsPerPageOptions]="[10, 25, 50]"
+          [paginator]="true"
+          currentPageReportTemplate="Mostrar {first} - {last} de {totalRecords} elementos"
+          [globalFilterFields]="['id_resultado ','fecha_entrenamiento']"
+          [scrollable]="true"
+          scrollHeight="500px"
+          [tableStyle]="{ 'min-width': '40rem' }"
+          [sortMode]="'single'"
+        >
+            <ng-template pTemplate="caption">
+            <div class="flex">
+              <button pButton label="Limpiar" class="p-button-outlined" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
+              <span class="p-input-icon-left ml-auto">
+                <input  type="text" (input)="applyFilter($event)" placeholder="Buscar" />
+              </span>       
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+                <th pSortableColumn="id_resultado">
+                    <div class="flex align-items-center">
+                        Id <p-sortIcon field="id_resultado"></p-sortIcon>
+                    </div>
+                </th>
+                <th pSortableColumn="id_version">
+                  <div class="flex align-items-center">
+                      Modelo de IA <p-sortIcon field="id_version"></p-sortIcon>
+                  </div>
+                </th>
+                <th pSortableColumn="id_dataset">
+                  <div class="flex align-items-center">
+                      Dataset <p-sortIcon field="id_dataset"></p-sortIcon>
+                  </div>
+                </th>
+                <th pSortableColumn="fecha_entrenamiento">
+                  <div class="flex align-items-center">
+                      Fecha Entrenamiento <p-sortIcon field="fecha_entrenamiento"></p-sortIcon>
+                  </div>
+                </th>
+                <th>
+                  <div class="flex align-items-center">
+                      Ver
+                  </div>
+                </th>
+            </tr>
+        </ng-template>
+      <ng-template pTemplate="body" let-customer>
+        <tr>
+          <td>{{ customer.id_resultado }}</td>
+          <td>{{ customer.modelo_version.nombre_modelo}}</td>
+          <td>{{ customer.dataset.nombre }}</td>
+          <td>{{ customer.fecha_entrenamiento | date:'yyyy/MM/dd HH:mm' }}</td>
+          <td>
+            <p-button
+              type="button"
+              icon="pi pi-eye"
+              styleClass="p-button-text"
+              (click)="Ver(customer)"
+            ></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="5">No se encontraron Modelos Entrenados.</td>
+        </tr>
+      </ng-template>
+      
+      </p-table>
+    </div> 
+  </div>
+  <p-dialog
+    header="Dashboard"
+    [(visible)]="visibleEditar"
+    [modal]="true"
+    [style]="{ width: '100vw', minWidth: '500px', maxWidth: '150vw' }"
+    [draggable]="false"
+    [resizable]="false"
+  >
+    <div class="card-metric">
+        <div class="ml-metrics-container">
+        <h2 class="title">Dashboard de Métricas de Machine Learning</h2>
+        <!-- Matriz de Confusión -->
+        <div class="confusion-matrix-section">
+            <h3>Matriz de Confusión</h3>
+            <div class="matrix-container">
+            <div class="matrix-labels">
+                <div class="matrix-title">Valores Reales</div>
+                <div class="predicted-title">Valores Clasificados</div>
+            </div>
+            
+            <table class="confusion-matrix">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th *ngFor="let clase of etiquetas">{{ clase }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let fila of matrizConfusion; let i = index">
+                    <th>{{ etiquetas[i] }}</th>
+                    <td *ngFor="let valor of fila; let j = index" 
+                        [style.background-color]="getColorCelda(i, j)"
+                        class="matrix-cell">
+                    <span class="matrix-value">{{ valor }}</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            
+            <div class="matrix-legend">
+                <div class="legend-item">
+                <div class="legend-color correct"></div>
+                <span>Clasificados Correctas</span>
+                </div>
+                <div class="legend-item">
+                <div class="legend-color incorrect"></div>
+                <span>Clasificados Incorrectas</span>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- Sección de Métricas Principales -->
+        <div class="metrics-grid">
+            <div class="metric-card precision">
+            <div class="metric-value">{{ formatearPorcentaje(precision) }}</div>
+            <div class="metric-label">Precisión</div>
+            <div class="metric-description">Proporción de Clasificados positivas correctas</div>
+            </div>
+            
+            <div class="metric-card accuracy">
+            <div class="metric-value">{{ formatearPorcentaje(exactitud) }}</div>
+            <div class="metric-label">Exactitud</div>
+            <div class="metric-description">Proporción de Clasificados totales correctas</div>
+            </div>
+            
+            <div class="metric-card recall">
+            <div class="metric-value">{{ formatearPorcentaje(recall) }}</div>
+            <div class="metric-label">Recall</div>
+            <div class="metric-description">Proporción de casos positivos detectados</div>
+            </div>
+            
+            <div class="metric-card f1-score">
+            <div class="metric-value">{{ formatearPorcentaje(f1Score) }}</div>
+            <div class="metric-label">F1-Score</div>
+            <div class="metric-description">Media armónica entre precisión y recall</div>
+            </div>
+        </div>
+
+        <!-- Sección de Gráficos -->
+        <div class="charts-container">
+            <div class="chart-section">
+            <h3>Comparación de Métricas</h3>
+            <div class="chart-wrapper">
+                <canvas baseChart
+                        [data]="barChartData"
+                        [options]="barChartOptions"
+                        [type]="barChartType"
+                        #chart>
+                </canvas>
+            </div>
+            </div>
+
+            <div class="chart-section">
+            <h3>Distribución de Clasificados Correctas</h3>
+            <div class="chart-wrapper">
+                <canvas baseChart
+                        [data]="doughnutChartData"
+                        [options]="doughnutChartOptions"
+                        [type]="doughnutChartType">
+                </canvas>
+            </div>
+            </div>
+        </div>
+        
+        </div>
+    </div>
+    
+  </p-dialog>
+ 
+
