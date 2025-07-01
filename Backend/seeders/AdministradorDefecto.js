@@ -1,6 +1,6 @@
 'use strict';
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { now } = require('sequelize/lib/utils');
 
 module.exports = {
