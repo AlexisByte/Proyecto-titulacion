@@ -6,7 +6,7 @@ import { LoginService } from '../Servicios/login.service';
   providedIn: 'root'
 })
 export class UrlServiciosWebService {
-  urlServiciosTest = "http://localhost:5000";
+  urlServiciosTest = "http://31.97.146.194/:5000";
   user: any;
   constructor(
     private http: HttpClient,

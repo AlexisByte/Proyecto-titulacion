@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../models');
 const { Op } = require('sequelize');
-const bcrypt = require('bcrypt'); // Asegúrate de importar bcrypt
+const bcrypt = require('bcryptjs'); // Asegúrate de importar bcrypt
 
 // Obtener todos los usuarios
 router.get('/', async (req, res) => {
