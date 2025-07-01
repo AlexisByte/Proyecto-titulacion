@@ -8,7 +8,11 @@ const db = require('./models');
 
 (async () => {
   try {
-    await db.sequelize.sync({ force: true });
+    if (env === 'development') {
+      await db.sequelize.sync({ force: true }); // Eliminar y crear tablas en desarrollo
+    } else {
+      await db.sequelize.sync(); // Solo crea tablas que no existan en producción, no elimina datos
+    }
     console.log("Database & tables created!");
   } catch (error) {
     console.error("Error during database sync:", error);
