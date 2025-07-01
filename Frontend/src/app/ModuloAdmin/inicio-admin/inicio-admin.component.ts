@@ -110,19 +110,47 @@ export class InicioAdminComponent  implements OnInit{
     this.setActiveMenu(''); 
     //console.log("Sección cambiada a:", this.seccion);
   }
-  SeccionReglas(event: Event){
+  SeccionDataset(event: Event){
     event.preventDefault();
     this.seccion = '5';
+    this.setActiveSection('Datasets');
+    this.setActiveMenu(''); 
+    //console.log("Sección cambiada a:", this.seccion);
+  } 
+  SeccionReglas(event: Event){
+    event.preventDefault();
+    this.seccion = '6';
     this.setActiveSection('Reglas');
     this.setActiveMenu(''); 
     //console.log("Sección cambiada a:", this.seccion);
   }
+  SeccionEntrenamiento(event: Event) {
+    event.preventDefault();
+    this.setActiveMenu('entrenamiento'); // Marca el menú "Perfil" como activo
+    this.setActiveSection(''); // Limpia la sección activa
+    this.collapsed = true; // Colapsa la sección de gestión
+    this.seccion = '7';
+  } 
+   SeccionModeloIa(event: Event) {
+    event.preventDefault();
+    this.setActiveMenu('modeloIa'); // Marca el menú "Perfil" como activo
+    this.setActiveSection(''); // Limpia la sección activa
+    this.collapsed = true; // Colapsa la sección de gestión
+    this.seccion = '8';
+  } 
+   SeccionClasificar(event: Event) {
+    event.preventDefault();
+    this.setActiveMenu('clasificar'); // Marca el menú "Perfil" como activo
+    this.setActiveSection(''); // Limpia la sección activa
+    this.collapsed = true; // Colapsa la sección de gestión
+    this.seccion = '9';
+  } 
   SeccionPerfil(event: Event) {
     event.preventDefault();
     this.setActiveMenu('profile'); // Marca el menú "Perfil" como activo
     this.setActiveSection(''); // Limpia la sección activa
     this.collapsed = true; // Colapsa la sección de gestión
-    this.seccion = '8';
+    this.seccion = '10';
   }
 }
 

@@ -55,7 +55,8 @@ router.get('/', async (req, res) => {
   try {
     // Obtener todas las versiones de modelo
     const versiones = await db.tb_versiones_modelos.findAll({
-      attributes: ['id_version', 'nombre_modelo', 'version', 'descripcion', 'id_usuario_creador', 'contenido'], // Incluye el campo contenido
+      attributes: ['id_version', 'nombre_modelo', 'version', 'descripcion', 'id_usuario_creador', 'contenido'],
+      order: [['id_version', 'ASC']], // <-- orden descendente
     });
 
     // Procesar cada versión para extraer el nombre del archivo

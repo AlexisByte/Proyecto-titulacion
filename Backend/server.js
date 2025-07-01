@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const db = require('./models'); // Asegúrate de que el archivo de modelos está bien configurado
 const passport = require('passport');
+const path = require('path');
 
 
 const passportJWT = require('passport-jwt');
@@ -15,6 +16,10 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+app.use(bodyParser.json({ limit: '500mb' }));
+app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
+app.use('/clasificados', express.static(path.join(__dirname, 'clasificados')));
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -31,8 +36,6 @@ passport.use(new Strategy(jwtOptions, async (jwt_payload, done) => {
   }
 }));
 
-app.use(passport.initialize());
-
 const verificarToken = require('./controllers/auth');
 
 // Ruta de login
@@ -43,7 +46,7 @@ app.use('/api/users', verificarToken, require('./routes/users'));
 app.use('/api/roles', require('./routes/roles'));
 app.use('/api/users-roles', verificarToken, require('./routes/users_roles'));
 app.use('/api/reglas-negocio', verificarToken, require('./routes/reglas_negocios'));
-app.use('/api/modelosIA', verificarToken, require('./routes/modelos'));
+app.use('/api/modelosIA', verificarToken,  require('./routes/modelos'));
 app.use('/api/reportes', verificarToken, require('./routes/reportes'));
 app.use('/api/evaluaciones', verificarToken, require('./routes/evaluaciones'));
 app.use('/api/datasets', verificarToken, require('./routes/datasets'));

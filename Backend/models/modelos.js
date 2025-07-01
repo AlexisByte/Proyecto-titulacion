@@ -15,13 +15,17 @@ module.exports = (sequelize, DataTypes) => {
       },
       descripcion: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: false
       },
       id_usuario_creador: {
         type: DataTypes.INTEGER,
         allowNull: false
       },
       contenido: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      requirements: {
         type: DataTypes.STRING,
         allowNull: true
       }

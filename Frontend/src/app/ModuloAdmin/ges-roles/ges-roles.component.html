@@ -130,11 +130,11 @@
                   id="descripcion" required 
                   #descripcionInput="ngModel"
                   placeholder="Descripcion del rol"
-                  minlength="100"
+                  minlength="50"
                   >
                 </div>
                 <div class="invalid-feedback" *ngIf="descripcionInput.invalid && descripcionInput.touched">
-                  Minimo 100 caracteres
+                  Minimo 50 caracteres
                 </div>
 
               <div class="col-12 d-flex justify-content-center mt-3">
@@ -168,11 +168,12 @@
                   name="nombre" class="form-control" 
                   id="nombre" required 
                   placeholder="Nombre del nuevo rol"
+                  minlength="10"
                   #nombreInput="ngModel"
                   >
                 </div>
                 <div class="invalid-feedback" *ngIf="nombreInput.invalid && nombreInput.touched">
-                  Debes ingresar un nombre valido!
+                  Debes ingresar un nombre valido!(min 10 caracteres)
                 </div>
 
                 <label for="descripcion" class="form-label" >Descripcion:</label>
@@ -183,10 +184,11 @@
                   id="descripcion" required 
                   placeholder="Descripcion del rol"
                   #descripcionInput="ngModel"
+                  minlength="50"
                   >
                 </div>
                 <div class="invalid-feedback" *ngIf="descripcionInput.invalid && descripcionInput.touched">
-                  Debes ingresar una descripcion valida!
+                  Debes ingresar una descripcion valida!(min 50 caracteres)
                 </div>
 
               <div class="col-12 d-flex justify-content-center mt-3">

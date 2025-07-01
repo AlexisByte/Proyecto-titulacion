@@ -1,6 +1,7 @@
 'use strict';
 
 const bcrypt = require('bcrypt');
+const { now } = require('sequelize/lib/utils');
 
 module.exports = {
   down: async (queryInterface, Sequelize) => {
@@ -23,7 +24,10 @@ module.exports = {
       {
         nombre,
         email: correo_electronico,
-        contrasena: hashedPassword
+        contrasena: hashedPassword,
+        activo:true,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], { returning: true });
 
@@ -31,7 +35,9 @@ module.exports = {
     await queryInterface.bulkInsert('tb_usuarios_roles', [
       {
         id_usuario: usuario.id_usuario,
-        id_rol: rol // Rol de Administrador
+        id_rol: rol, // Rol de Administrador
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ]);
   }

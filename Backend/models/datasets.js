@@ -11,10 +11,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         descripcion: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: false
         },
         archivo: {
             type: DataTypes.TEXT, // Ruta o URL del dataset almacenado
+            allowNull: false
+        },
+        inf_columnas: {
+            type: DataTypes.TEXT,
             allowNull: false
         },
         id_usuario_creador: {

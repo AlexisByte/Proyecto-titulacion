@@ -3,17 +3,23 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { LoginService } from '../../Servicios/login.service';
 import { catchError } from 'rxjs/operators';
+import { UrlServiciosWebService } from '../../Servicios/url-servicios-web.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RolesService {
-  private apiUrl = 'http://localhost:5000/api/roles';
+  private apiUrl: string;
 
   constructor(
     private http: HttpClient,
     private auth: LoginService,
-  ) { }
+    private urlService: UrlServiciosWebService,
+
+  ) {
+    this.apiUrl = `${this.urlService.urlServiciosTest}/api/roles`;
+   }
+
 
   private getHeaders() {
     const token = this.auth.getToken();
@@ -25,9 +31,6 @@ export class RolesService {
 
   obtenerRoles(): Observable<any> {
     return this.http.get<any>(this.apiUrl, { headers: this.getHeaders() });
-  }
-  ListadoRoles() {
-    return this.http.get<any[]>(this.apiUrl)
   }
 
   agregarRoles(usuario: { nombre_rol: string; descripcion: string }): Observable<any> {

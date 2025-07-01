@@ -33,6 +33,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.FLOAT,
             allowNull: false
         },
+        modelo_entrenado: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         fecha_entrenamiento: {
             type: DataTypes.DATE,
             allowNull: false,
@@ -40,7 +44,13 @@ module.exports = (sequelize, DataTypes) => {
         }
     }, {
         tableName: 'tb_resultados_entrenamiento',
-        timestamps: true
+        timestamps: true,
+        indexes: [
+            {
+                unique: true,
+                fields: ['id_version', 'id_dataset']
+            }
+        ]
     });
 
     // Asociaciones
@@ -49,5 +59,5 @@ module.exports = (sequelize, DataTypes) => {
         ResultadosEntrenamiento.belongsTo(models.tb_datasets, { foreignKey: 'id_dataset', as: 'dataset' });
     };
 
-    return  ResultadosEntrenamiento;
+    return ResultadosEntrenamiento;
 };

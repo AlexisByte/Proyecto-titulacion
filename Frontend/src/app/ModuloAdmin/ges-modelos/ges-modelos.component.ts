@@ -28,9 +28,6 @@ export class GesModelosComponent {
   id_modelo: number = 0;
   estado:boolean=true;
 
-
-  strEstado:any="";
-
   visibleEditar: boolean=false;
   visibleEstado: boolean=false;
   visibleNuevo: boolean=false;
@@ -109,7 +106,7 @@ export class GesModelosComponent {
 
     try {
       const { nombre_modelo, version, descripcion } = form.value;  
-      const id = this.serviciolog.getUser();
+      const id = this.serviciolog.getUser1();
       const nuevo = new FormData();
 
       nuevo.append("nombre_modelo", nombre_modelo);
@@ -138,17 +135,9 @@ export class GesModelosComponent {
 async RegistrarActualizacion(form: any) {
   try {
     const { nombre_modelo, version, descripcion } = form.value || {};
-    const user = this.serviciolog.getUser();
+    const user = this.serviciolog.getUser1();
 
-    if (!user?.id_usuario) {
-      this.notificationService.showError("Usuario no autenticado.");
-      throw new Error("No se pudo obtener el ID del usuario.");
-    }
-
-    if (!this.objSeleccion?.id_version) {
-      this.notificationService.showError("No se ha seleccionado un modelo para actualizar.");
-      return;
-    }
+    console.log("Usuario obtenido:", user);
 
     const edit = new FormData();
     edit.append("nombre_modelo", nombre_modelo);
@@ -183,27 +172,22 @@ async RegistrarActualizacion(form: any) {
   }
 }
 
-  async Desactivar() {
+  async Eliminar() {
     try {
-      const nuevoEstado = { activo: !this.objSeleccion.activo };
-  
-      //console.log(`Cambiando estado de usuario ${this.objSeleccion.id_usuario} a ${nuevoEstado.activo}`);
-  
-      // Llamar al servicio correcto
       const data = await lastValueFrom(this.servicios.eliminarModelos(this.objSeleccion.id_version));
   
       if (data?.message) {
         this.notificationService.showSuccess(data.message);
       } else {
-        this.notificationService.showSuccess("Estado del usuario actualizado correctamente.");
+        this.notificationService.showSuccess("Modelo eliminado correctamente.");
       }
-  
+
       this.visibleEstado = false;
       this.ListadoInformacion();
   
     } catch (error) {
-      console.error("Error al cambiar el estado del usuario: ", error);
-      this.notificationService.showError("Error al cambiar el estado del usuario. Intente nuevamente.");
+      console.error("Error al eliminar el modelo: ", error);
+      this.notificationService.showError("Error al al eliminar el modelo. Intente nuevamente.");
     }
   }
 

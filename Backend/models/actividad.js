@@ -11,11 +11,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         detalles: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: false
         },
         id_usuario: {
             type: DataTypes.INTEGER,
-            allowNull: true
+            allowNull: false
         },
         fecha: {
             type: DataTypes.DATE,

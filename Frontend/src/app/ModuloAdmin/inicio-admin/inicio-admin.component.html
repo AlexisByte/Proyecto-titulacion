@@ -107,45 +107,64 @@
      <i class="bi bi-menu-button-wide"></i>
      <span>Gestión</span>
      <i class="bi bi-chevron-down ms-auto"></i>
-   </a>
-   <ul id="components-nav" 
-   class="nav-content collapse" 
-   [ngClass]="{'show': menus['gestion']}" 
-   data-bs-parent="#sidebar-nav">
-        <li>
-          <a href="" (click)="SeccionUsuarios($event)" [ngClass]="{'active': activeSection === 'Usuarios'}">
-            <i class="bi bi-circle"></i><span>Usuarios</span>
-          </a>
-        </li>
-        <li>
-          <a href=""(click)="SeccionRoles($event)" [ngClass]="{'active': activeSection === 'Roles'}">
-            <i class="bi bi-circle"></i><span>Roles</span>
-          </a>
-        </li>
-        <li>
-          <a href="" (click)="SeccionModelos($event)" [ngClass]="{'active': activeSection === 'Modelos'}">
-            <i class="bi bi-circle"></i><span>Modelos</span>
-          </a>
-        </li>
-        <li>
-          <a href="" (click)="SeccionReglas($event)" [ngClass]="{'active': activeSection === 'Reglas'}">
-            <i class="bi bi-circle"></i><span>Reglas del Negocio</span>
-          </a>
-        </li>
-        <!-- <li>
-          <a href="" >
-            <i class="bi bi-circle"></i><span>Negocios</span>
-          </a>
-        </li>
-        <li >
-          <a href="" >
-            <i class="bi bi-circle"></i><span>Administradores</span>
-          </a>
-        </li> -->
-      </ul>
+      </a>
+    <ul id="components-nav" 
+    class="nav-content collapse" 
+    [ngClass]="{'show': menus['gestion']}" 
+    data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="" (click)="SeccionUsuarios($event)" [ngClass]="{'active': activeSection === 'Usuarios'}">
+              <i class="bi bi-circle"></i><span>Usuarios</span>
+            </a>
+          </li>
+          <li>
+            <a href=""(click)="SeccionRoles($event)" [ngClass]="{'active': activeSection === 'Roles'}">
+              <i class="bi bi-circle"></i><span>Roles</span>
+            </a>
+          </li>
+          <li>
+            <a href="" (click)="SeccionModelos($event)" [ngClass]="{'active': activeSection === 'Modelos'}">
+              <i class="bi bi-circle"></i><span>Modelos</span>
+            </a>
+          </li>
+          <li>
+            <a href="" (click)="SeccionDataset($event)" [ngClass]="{'active': activeSection === 'Datasets'}">
+              <i class="bi bi-circle"></i><span>Datasets</span>
+            </a>
+          </li>
+          <li>
+            <a href="" (click)="SeccionReglas($event)" [ngClass]="{'active': activeSection === 'Reglas'}">
+              <i class="bi bi-circle"></i><span>Reglas del Negocio</span>
+            </a>
+          </li>
+          <!-- <li>
+            <a href="" >
+              <i class="bi bi-circle"></i><span>Negocios</span>
+            </a>
+          </li>
+          <li >
+            <a href="" >
+              <i class="bi bi-circle"></i><span>Administradores</span>
+            </a>
+          </li> -->
+        </ul>
     </li>
     <li class="nav-heading">Páginas</li>
-  
+    <li class="nav-item">
+      <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'entrenamiento'}" href="" (click)="SeccionEntrenamiento($event)">        <i class="bi bi-person"></i>
+        <span>Entrenamiento</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'modeloIa'}" href="" (click)="SeccionModeloIa($event)">        <i class="bi bi-person"></i>
+        <span>Modelos Entrenados</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'clasificar'}" href="" (click)="SeccionClasificar($event)">        <i class="bi bi-person"></i>
+        <span>Clasificar</span>
+      </a>
+    </li>
     <li class="nav-item">
       <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'profile'}" href="" (click)="SeccionPerfil($event)">        <i class="bi bi-person"></i>
         <span>Perfil</span>
@@ -334,9 +353,21 @@
     <app-ges-modelos></app-ges-modelos>
   </div>
   <div *ngIf="seccion === '5'">
+    <app-ges-datasets></app-ges-datasets>
+  </div>
+  <div *ngIf="seccion === '6'">
     <app-ges-reglas-negocio></app-ges-reglas-negocio>
   </div>
-  <div *ngIf="seccion === '8'">
+  <div *ngIf="seccion === '7'">
+    <app-entrenamiento></app-entrenamiento>
+  </div>
+    <div *ngIf="seccion === '8'">
+    <app-modelos-ia></app-modelos-ia>
+  </div>
+    <div *ngIf="seccion === '9'">
+    <app-clasificar></app-clasificar>
+  </div>
+  <div *ngIf="seccion === '10'">
     <app-perfil-admin></app-perfil-admin>
   </div>
   <footer class="footer">

@@ -10,6 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { TagModule } from 'primeng/tag';
+import { NgChartsModule } from 'ng2-charts';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -27,6 +28,11 @@ import { GesReglasNegocioComponent } from './ModuloAdmin/ges-reglas-negocio/ges-
 import { PerfilAdminComponent } from './ModuloAdmin/perfil-admin/perfil-admin.component';
 import { PerfilGerenteComponent } from './ModuloGerente/perfil-gerente/perfil-gerente.component';
 import { PerfilVentanillaComponent } from './ModuloVentanilla/perfil-ventanilla/perfil-ventanilla.component';
+import { GesDatasetsComponent } from './ModuloAdmin/ges-datasets/ges-datasets.component';
+import { EntrenamientoComponent } from './ModuloAdmin/entrenamiento/entrenamiento.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { ModelosIAComponent } from './ModuloAdmin/modelos-ia/modelos-ia.component';
+import { ClasificarComponent } from './ModuloAdmin/clasificar/clasificar.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +51,10 @@ import { PerfilVentanillaComponent } from './ModuloVentanilla/perfil-ventanilla/
     PerfilAdminComponent,
     PerfilGerenteComponent,
     PerfilVentanillaComponent,
+    GesDatasetsComponent,
+    EntrenamientoComponent,
+    ModelosIAComponent,
+    ClasificarComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,7 +63,8 @@ import { PerfilVentanillaComponent } from './ModuloVentanilla/perfil-ventanilla/
     HttpClientModule,
     BrowserAnimationsModule,
     MatSnackBarModule,
-
+    NgSelectModule,
+    NgChartsModule,
     TableModule,
     ButtonModule,
     DialogModule,

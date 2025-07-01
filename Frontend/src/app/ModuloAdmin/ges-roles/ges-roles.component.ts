@@ -42,8 +42,7 @@ export class GesRolesComponent {
   }
 
   async ListadoInformacion() {
-    this.lsListado = await new Promise<any>(resolve => this.servicios.ListadoRoles().subscribe(translated => { resolve(translated) }));
-    //console.log(this.all_ofertas)
+    this.lsListado = await new Promise<any>(resolve => this.servicios.obtenerRoles().subscribe(translated => { resolve(translated) }));
   }
 
   ModalNuevoInformacion() {
@@ -97,7 +96,6 @@ export class GesRolesComponent {
   }
 
   async RegistrarActualizacion(form: any) {
-    
     if (form.valid) { 
       try {
         const { nombre, descripcion } = form.value;  
@@ -105,6 +103,7 @@ export class GesRolesComponent {
         // Asegurar que los datos coincidan con lo que espera la API
         const editRol = { nombre_rol: nombre, descripcion };
         console.log(form.value+this.objSeleccion.id_rol)
+        
         // Llamada al servicio y espera de la respuesta
         const data = await lastValueFrom(this.servicios.actualizarRoles(this.objSeleccion.id_rol, editRol));
   

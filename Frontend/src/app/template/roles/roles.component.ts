@@ -18,7 +18,6 @@ constructor(
     ) {}
   ngOnInit(): void {
     // Recuperar el usuario del localStorage
-    const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const roles = JSON.parse(localStorage.getItem('roles') || '[]');
     

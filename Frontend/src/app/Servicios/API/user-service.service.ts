@@ -3,17 +3,22 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { LoginService } from '../../Servicios/login.service';
 import { catchError } from 'rxjs/operators';
+import { UrlServiciosWebService } from '../../Servicios/url-servicios-web.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserServiceService {
-  private apiUrl = 'http://localhost:5000/api/users';
+  private apiUrl: string;
 
   constructor(
     private http: HttpClient,
     private auth: LoginService,
-  ) { }
+    private urlService: UrlServiciosWebService,
+
+  ) { 
+    this.apiUrl = `${this.urlService.urlServiciosTest}/api/users`;
+  }
 
   private getHeaders() {
     const token = this.auth.getToken();

@@ -10,15 +10,21 @@ module.exports = {
     await queryInterface.bulkInsert('tb_roles', [
       {
         nombre_rol: 'Administrador',
-        descripcion: 'Usuario con acceso completo al sistema.'
+        descripcion: 'Usuario con acceso completo al sistema.',
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         nombre_rol: 'Gerente',
-        descripcion: 'Usuario con acceso para gestionar ajustes y configuraciones financieras.'
+        descripcion: 'Usuario con acceso para gestionar ajustes y configuraciones financieras.',
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
       {
         nombre_rol: 'Ventanilla',
-        descripcion: 'Usuario con acceso para realizar consultas de solvencia y operaciones básicas.'
+        descripcion: 'Usuario con acceso para realizar consultas de solvencia y operaciones básicas.',
+        createdAt: new Date(),
+        updatedAt: new Date()
       },
     ]);
   }

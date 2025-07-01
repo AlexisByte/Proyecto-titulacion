@@ -8,16 +8,16 @@ import { UrlServiciosWebService } from '../../Servicios/url-servicios-web.servic
 @Injectable({
   providedIn: 'root'
 })
-export class ModelosService {
+export class DatasetsService {
   private apiUrl: string;
 
   constructor(
     private http: HttpClient,
     private auth: LoginService,
     private urlService: UrlServiciosWebService,
-    
+
   ) {
-      this.apiUrl = `${this.urlService.urlServiciosTest}/api/modelosIA`;
+    this.apiUrl = `${this.urlService.urlServiciosTest}/api/datasets`;
    }
 
   private getHeaders(isFormData = false) {
@@ -25,7 +25,6 @@ export class ModelosService {
     let headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-  
     // Solo agrega Content-Type si no es FormData
     if (!isFormData) {
       headers = headers.set('Content-Type', 'application/json');
@@ -34,12 +33,12 @@ export class ModelosService {
     return headers;
   }
 
-  obtenerModelos(): Observable<any> {
+  obtener(): Observable<any> {
     return this.http.get<any>(this.apiUrl, { headers: this.getHeaders() });
   }
 
-  agregarModelo(modelo: FormData): Observable<any> {
-    return this.http.post(this.apiUrl, modelo, {
+  agregar(nuevo: FormData): Observable<any> {
+    return this.http.post(this.apiUrl, nuevo, {
       headers: this.getHeaders(true) // No agrega Content-Type manualmente
     }).pipe(
       catchError((error) => {
@@ -50,8 +49,8 @@ export class ModelosService {
   }
 
 
-  actualizarModelos(id_modelo: number, modelo: FormData): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id_modelo}`, modelo, { 
+  actualizar(editado: number, modelo: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${editado}`, modelo, { 
       headers: this.getHeaders(true) 
     }).pipe(
       catchError((error) => {
@@ -61,7 +60,11 @@ export class ModelosService {
     );
   }
 
-  eliminarModelos(id: number): Observable<any> {
+  eliminar(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  }
+
+  obtenerPorId(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 }

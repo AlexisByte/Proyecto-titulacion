@@ -1,20 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Table } from 'primeng/table';
-import { NotificationService } from '../../Servicios/notification-service.service';
-import { RolesService } from '../../Servicios/API/roles.service';
-import { UserServiceService } from '../../Servicios/API/user-service.service';
-import { lastValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorResponse
+import { NotificationService } from '../../Servicios/notification-service.service';
 import { DatasetsService} from '../../Servicios/API/datasets.service';
+import { lastValueFrom } from 'rxjs';
 import { NgForm } from '@angular/forms';
 import { LoginService } from '../../Servicios/login.service';
 
 @Component({
-  selector: 'app-ges-reglas-negocio',
-  templateUrl: './ges-reglas-negocio.component.html',
-  styleUrls: ['./ges-reglas-negocio.component.css']
+  selector: 'app-ges-datasets',
+  templateUrl: './ges-datasets.component.html',
+  styleUrls: ['./ges-datasets.component.css']
 })
-export class GesReglasNegocioComponent {
+export class GesDatasetsComponent {
    @ViewChild('dt1') table!: Table;
 
   lsListado:any=[];
@@ -78,10 +76,26 @@ export class GesReglasNegocioComponent {
   }
 
   async ListadoInformacion() {
-    this.lsListado = await new Promise<any>(resolve => this.servicios.obtener().subscribe(translated => { resolve(translated) }));
-    //console.log(this.lsListado)
-  }
+    const data = await new Promise<any>(resolve => 
+      this.servicios.obtener().subscribe(translated => resolve(translated))
+    );
 
+    this.lsListado = data.map((item: any) => {
+      const nombreArchivo = item.nombre_archivo || '';
+
+      // Extraer "train-menos" desde el nombre del archivo
+        const nombre_archivo_simple = nombreArchivo
+        ? nombreArchivo.split('_')[0] // Extrae hasta el primer _
+        : '';
+
+      return {
+        ...item,
+        nombre_archivo_simple // nuevo campo procesado
+      };
+    });
+
+    console.log(this.lsListado);
+  }
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -117,7 +131,7 @@ export class GesReglasNegocioComponent {
 
       nuevo.append("nombre", nombre);
       nuevo.append("descripcion", descripcion);
-      nuevo.append("id_usuario_creador", id.id_usuario);
+      nuevo.append("id_usuario_creador", id.id_usuario.toString());
       nuevo.append("archivo", this.dataset); // Añadir archivo al FormData
 
       const data = await lastValueFrom(this.servicios.agregar(nuevo));
@@ -145,7 +159,7 @@ export class GesReglasNegocioComponent {
 async RegistrarActualizacion(form: any) {
   try {
     const { nombre_dataset, version, descripcion } = form.value || {};
-    const user = this.serviciolog.getUser();
+    const user = this.serviciolog.getUser1();
 
     if (!user?.id_usuario) {
       this.notificationService.showError("Usuario no autenticado.");
@@ -214,4 +228,3 @@ async RegistrarActualizacion(form: any) {
   }
 
 }
-

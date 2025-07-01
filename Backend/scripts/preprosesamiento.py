@@ -37,13 +37,13 @@ def procesar_dataset(ruta_archivo, chunk_size=20000, sample_for_categories=10000
     if total_rows_estimate < 20000:
         chunk_size = max(1, total_rows_estimate // 2)
     
-    sample_df = pd.read_csv(ruta_archivo, nrows=sample_for_categories, sep=delimitador,low_memory=False)
+    sample_df = pd.read_csv(ruta_archivo, nrows=sample_for_categories, sep=delimitador, low_memory=False)
     
     if sample_df.empty:
         raise ValueError("El dataset está vacío.")
     
-        ########
-    # Reemplazar strings vacíos y valores incorrectos con np.nan
+    ########
+# Reemplazar strings vacíos y valores incorrectos con np.nan
     sample_df.replace(['_', 'NA', 'na', 'N/A', 'n/a', '', 'null', 'Null'], np.nan, inplace=True)
     sample_df.replace(r'[^0-9A-Za-z.,\- ]+', np.nan, regex=True, inplace=True)
     sample_df = sample_df.infer_objects(copy=False)  # para evitar FutureWarning
@@ -86,10 +86,6 @@ def procesar_dataset(ruta_archivo, chunk_size=20000, sample_for_categories=10000
         le.fit(sample_df[col].fillna('MISSING').astype(str))
         label_encoders[col] = le
     
-        
-     # 🔧 Detectar la última columna como objetivo
-    columna_objetivo = sample_df.columns[-1]
-    
     del sample_df
     gc.collect()
     
@@ -100,12 +96,12 @@ def procesar_dataset(ruta_archivo, chunk_size=20000, sample_for_categories=10000
         for chunk in pd.read_csv(ruta_archivo, chunksize=chunk_size, sep=delimitador, low_memory=False):
             chunk_rows = len(chunk)
             total_rows += chunk_rows
-
+            
             # 🔹 Limpieza general de valores inválidos en cada chunk
             chunk.replace(['_', 'NA', 'na', 'N/A', 'n/a', '', 'null', 'Null'], np.nan, inplace=True)
             chunk.replace(r'[^0-9A-Za-z.,\- ]+', np.nan, regex=True, inplace=True)
-
-            # 🔹 Limpieza y conversión de columnas numéricas
+            
+             # 🔹 Limpieza y conversión de columnas numéricas
             for col in columnas_numericas:
                 if col in chunk.columns:
                     chunk[col] = chunk[col].astype(str).str.replace(r'[^0-9.\-]', '', regex=True)
@@ -136,21 +132,14 @@ def procesar_dataset(ruta_archivo, chunk_size=20000, sample_for_categories=10000
             del chunk
             gc.collect()
             pbar.update(chunk_rows)
-        
-     # 🔧 Guardar solo las clases del LabelEncoder de la columna objetivo si es categórica
-    clases_label_encoder_objetivo = None
-    if columna_objetivo in label_encoders:
-        clases_label_encoder_objetivo = label_encoders[columna_objetivo].classes_.tolist()
-
+    
     metadata = {
         'archivo_original': ruta_archivo,
         'archivo_procesado': ruta_salida,
         'filas_procesadas': total_rows,
         'columnas_categoricas': columnas_categoricas,
         'columnas_numericas': columnas_numericas,
-        'fecha_procesamiento': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'columna_objetivo': columna_objetivo,  # 
-        'clases_columna_objetivo': clases_label_encoder_objetivo  # 
+        'fecha_preprocesamiento': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
     
     # Ruta donde se guardará la metadata
