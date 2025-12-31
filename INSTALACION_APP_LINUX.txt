@@ -1,0 +1,260 @@
+GUÍA COMPLETA DE INSTALACIÓN Y DESPLIEGUE
+APLICACIÓN WEB + IA
+SISTEMA OPERATIVO: UBUNTU SERVER (20.04 / 22.04)
+
+==================================================
+1. REQUISITOS DEL SERVIDOR
+==================================================
+- Ubuntu Server 20.04 o 22.04
+- 2 vCPU mínimo (4 recomendado)
+- 4 GB RAM recomendado
+- Acceso root o sudo
+
+Tecnologías:
+- Node.js LTS
+- Express + PM2
+- Angular
+- PostgreSQL + Sequelize
+- Python 3.10 / 3.11 (IA)
+- Nginx
+- Certbot (HTTPS)
+
+==================================================
+2. ACTUALIZACIÓN DEL SISTEMA
+==================================================
+sudo apt update && sudo apt upgrade -y
+sudo apt install curl git unzip htop -y
+
+==================================================
+3. INSTALACIÓN DE NODE.JS (LTS)
+==================================================
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt install -y nodejs
+
+Verificar:
+node -v
+npm -v
+
+==================================================
+4. INSTALACIÓN DE POSTGRESQL
+==================================================
+sudo apt install postgresql postgresql-contrib -y
+
+Crear BD y usuario:
+sudo -u postgres psql
+
+CREATE DATABASE creditos_db;
+CREATE USER app_user WITH PASSWORD 'password_segura';
+GRANT ALL PRIVILEGES ON DATABASE creditos_db TO app_user;
+\q
+
+==================================================
+5. CLONAR PROYECTO
+==================================================
+cd /var/www
+sudo git clone https://github.com/usuario/proyecto.git
+sudo chown -R $USER:$USER proyecto
+cd proyecto
+
+Estructura recomendada:
+- backend/
+- frontend/
+- ia/
+
+==================================================
+6. BACKEND NODE.JS + EXPRESS
+==================================================
+cd backend
+npm install
+
+Archivo .env:
+PORT=5000
+DB_HOST=localhost
+DB_NAME=creditos_db
+DB_USER=app_user
+DB_PASSWORD=password_segura
+DB_DIALECT=postgres
+JWT_SECRET=clave_super_secreta
+NODE_ENV=production
+
+Migraciones / Seeds:
+export NODE_ENV=production
+node sync.js
+npx sequelize-cli db:seed:all
+
+==================================================
+7. OPTIMIZACIONES NODE.JS (MUY IMPORTANTE)
+==================================================
+En server.js:
+
+- Aumentar timeout del servidor:
+server.setTimeout(10 * 60 * 1000);
+
+- Aumentar límites:
+express.json({ limit: '512mb' });
+express.urlencoded({ extended: true, limit: '512mb' });
+
+- Usar spawn para Python (NO exec).
+
+==================================================
+8. EJECUCIÓN BACKEND EN SEGUNDO PLANO (PM2)
+==================================================
+sudo npm install -g pm2
+
+pm2 start server.js --name api-creditos --max-memory-restart 1500M
+pm2 save
+pm2 startup
+
+Logs y monitoreo:
+pm2 monit
+pm2 logs api-creditos
+
+Rotación de logs:
+pm2 install pm2-logrotate
+pm2 set pm2-logrotate:max_size 10M
+pm2 set pm2-logrotate:retain 5
+
+==================================================
+9. PYTHON IA (ENTORNO VIRTUAL ESTABLE)
+==================================================
+sudo apt install python3.10 python3.10-venv python3-pip -y
+
+cd /var/www/proyecto
+mkdir ia
+cd ia
+
+python3.10 -m venv venv
+source venv/bin/activate
+
+Instalar librerías:
+pip install --upgrade pip
+pip install numpy pandas scikit-learn joblib
+pip install pymupdf pdfplumber lxml beautifulsoup4
+
+Guardar dependencias:
+pip freeze > requirements.txt
+
+==================================================
+10. USO DE PYTHON DESDE NODE
+==================================================
+Ruta correcta:
+/var/www/proyecto/ia/venv/bin/python
+
+Ejemplo:
+spawn('/var/www/proyecto/ia/venv/bin/python', ['predecir.py', archivo.csv])
+
+==================================================
+11. FRONTEND ANGULAR
+==================================================
+npm install -g @angular/cli
+
+cd frontend
+npm install
+ng build --configuration production
+
+Copiar build:
+sudo rm -rf /var/www/html/*
+sudo cp -r dist/* /var/www/html/
+
+==================================================
+12. NGINX
+==================================================
+sudo apt install nginx -y
+
+Archivo:
+sudo nano /etc/nginx/sites-available/default
+
+CONFIGURACIÓN COMPLETA:
+
+server {
+    listen 80;
+    server_name tufinanciera.app www.tufinanciera.app;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name tufinanciera.app www.tufinanciera.app;
+
+    client_max_body_size 512M;
+
+    root /var/www/html;
+    index index.html index.htm;
+
+    ssl_certificate /etc/letsencrypt/live/tufinanciera.app/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/tufinanciera.app/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    proxy_connect_timeout 600s;
+    proxy_send_timeout 600s;
+    proxy_read_timeout 600s;
+    send_timeout 600s;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://localhost:5000/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+    }
+
+    location /clasificados/ {
+        alias /var/www/clasificados/;
+        autoindex off;
+        add_header Content-Disposition "attachment";
+        add_header Access-Control-Allow-Origin *;
+    }
+}
+
+Verificar:
+sudo nginx -t
+sudo systemctl reload nginx
+
+==================================================
+13. HTTPS (CERTBOT)
+==================================================
+sudo apt install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d tufinanciera.app -d www.tufinanciera.app
+
+==================================================
+14. DESCARGAS SEGURAS (FUERA DE /root)
+==================================================
+sudo mkdir -p /var/www/clasificados
+sudo cp -r /root/Proyecto-titulacion/Backend/clasificados/* /var/www/clasificados
+sudo chown -R www-data:www-data /var/www/clasificados
+
+==================================================
+15. FIREWALL
+==================================================
+sudo ufw allow OpenSSH
+sudo ufw allow 'Nginx Full'
+sudo ufw enable
+
+==================================================
+16. DIAGNÓSTICO Y MANTENIMIENTO
+==================================================
+pm2 monit
+pm2 logs api-creditos
+htop
+free -h
+df -h
+
+==================================================
+17. BUENAS PRÁCTICAS FINALES
+==================================================
+- No usar /root para servir archivos
+- Usar Python 3.10/3.11
+- PM2 con límite de memoria
+- Timeouts altos para IA
+- Logs rotados
+- Backups de BD y modelos
+- Variables sensibles en .env
+
+==================================================
+FIN DEL ARCHIVO
+==================================================

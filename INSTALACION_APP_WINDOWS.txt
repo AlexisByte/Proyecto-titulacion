@@ -1,0 +1,136 @@
+GUÍA DE INSTALACIÓN Y DESPLIEGUE
+APLICACIÓN WEB + IA
+SISTEMA OPERATIVO: WINDOWS
+
+==================================================
+1. REQUISITOS
+==================================================
+- Windows 10 / 11 / Windows Server
+- Node.js LTS
+- Python 3.x
+- PostgreSQL
+- Git
+- PM2
+- NSSM (servicios)
+
+==================================================
+2. INSTALAR NODE.JS
+==================================================
+Descargar desde:
+https://nodejs.org
+
+Verificar:
+node -v
+npm -v
+
+==================================================
+3. INSTALAR POSTGRESQL
+==================================================
+Descargar desde:
+https://www.postgresql.org/download/windows/
+
+Crear base de datos:
+creditos_db
+Usuario:
+app_user
+
+==================================================
+4. CLONAR PROYECTO
+==================================================
+cd C:\
+git clone https://github.com/usuario/proyecto.git
+cd proyecto
+
+==================================================
+5. BACKEND NODE.JS
+==================================================
+cd backend
+npm install
+
+Archivo .env:
+PORT=3000
+DB_HOST=localhost
+DB_NAME=creditos_db
+DB_USER=app_user
+DB_PASSWORD=password_segura
+NODE_ENV=production
+
+==================================================
+6. BACKEND EN SEGUNDO PLANO
+==================================================
+npm install -g pm2
+pm2 start app.js --name api-creditos
+pm2 save
+pm2 startup
+
+==================================================
+7. FRONTEND ANGULAR
+==================================================
+npm install -g @angular/cli
+cd frontend
+npm install
+ng build --configuration production
+
+==================================================
+8. INSTALAR PYTHON
+==================================================
+Descargar desde:
+https://www.python.org/downloads/
+
+IMPORTANTE:
+Marcar "Add Python to PATH"
+
+==================================================
+9. ENTORNO VIRTUAL PYTHON
+==================================================
+cd C:\proyecto
+mkdir ia
+cd ia
+
+python -m venv venv
+venv\Scripts\activate
+
+Instalar librerías:
+pip install numpy pandas scikit-learn joblib
+pip install pymupdf pdfplumber lxml beautifulsoup4
+
+Guardar dependencias:
+pip freeze > requirements.txt
+
+==================================================
+10. CONEXIÓN NODE ↔ PYTHON
+==================================================
+Usar siempre:
+C:\proyecto\ia\venv\Scripts\python.exe predecir.py archivo.csv
+
+==================================================
+11. IA EN SEGUNDO PLANO (SERVICIO)
+==================================================
+Descargar NSSM:
+https://nssm.cc/download
+
+Crear servicio:
+nssm install IA_Creditos
+
+Path:
+C:\proyecto\ia\venv\Scripts\python.exe
+
+Arguments:
+api_ia.py
+
+Startup directory:
+C:\proyecto\ia
+
+Iniciar:
+nssm start IA_Creditos
+
+==================================================
+12. CONFIGURACIONES EXTRA
+==================================================
+- Desactivar suspensión del sistema
+- Excluir carpetas del antivirus
+- Abrir puertos necesarios en firewall
+- Separar logs backend / IA
+- Respaldos periódicos
+
+FIN DEL ARCHIVO
