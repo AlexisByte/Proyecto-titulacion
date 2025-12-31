@@ -8,6 +8,12 @@ const { FLOAT } = require('sequelize');
 const path = require('path');
 const multer = require('multer');
 const fsPromises = require('fs').promises;
+const readline = require('readline'); 
+const { parse } = require('json2csv');
+
+// const pythonExecutable = '/root/Proyecto-titulacion/Backend/venv/bin/python'; //linux
+const pythonExecutable = path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe'); //windows
+
 
 // Registro de actividad
 const logActivity = async (action, details, userId) => {
@@ -88,7 +94,7 @@ router.post('/entrenamiento', async (req, res) => {
         }
 
         // Ejecutar script de Python
-        const pythonProcess = spawn('python', [
+        const pythonProcess = spawn(pythonExecutable, [
             'scripts/entrenar_ia.py',
             datasetRuta,
             modeloRuta,
@@ -311,7 +317,7 @@ router.post('/clasificar/csv', upload.single('archivo'), async (req, res) => {
         }
 
         // Ejecutar el script de Python para procesar el CSV de manera asíncrona
-        const pythonPreProcess = spawn('python', [
+        const pythonPreProcess = spawn(pythonExecutable, [
             'scripts/preprosesamiento.py',
             archivo
         ]);
@@ -342,7 +348,7 @@ router.post('/clasificar/csv', upload.single('archivo'), async (req, res) => {
             console.log(`csv: ${metadata_processedFilePath}-modelo:${modelo_path}-Metaata:${metadataPath}`);
             
             // Ejecutar script de Python para clasificar
-            const pythonProcess = spawn('python', [
+            const pythonProcess = spawn(pythonExecutable, [
                 'scripts/clasificar.py',
                 modelo_path,
                 metadataPath,
@@ -381,17 +387,9 @@ router.post('/clasificar/csv', upload.single('archivo'), async (req, res) => {
                     if (!fs.existsSync(archivoSalida)) {
                         logActivity('clasificacion_fallida', 'El archivo clasificado no fue generado', id_usuario_creador);
                         return res.status(500).json({ error: 'El archivo clasificado no fue generado' });
+                        fs.unlink(archivo, () => {});
                     }
 
-                    /*res.download(archivoSalida, (err) => {
-                        if (err) {
-                            console.error('Error al enviar archivo:', err);
-                            return res.status(500).json({ error: 'No se pudo descargar el archivo clasificado' });
-                        }
-
-                        // Opcional: Eliminar CSV subido después de la descarga
-                        //fs.unlink(ruta_archivo, () => {});
-                    });*/
                     logActivity('clasificacion_exitosa', `Clasificación exitosa con modelo ${id_modelo_entrenado}. Archivo generado: ${archivoSalida}`, id_usuario_creador);
                     res.status(201).json({ message: 'Clasificacion completada.', resultado });
                 } catch (err) {
@@ -416,69 +414,97 @@ router.post('/clasificar/csv', upload.single('archivo'), async (req, res) => {
 
 router.post('/clasificar/formulario', async (req, res) => {
   try {
-    const { id_modelo_entrenado, id_usuario_creador } = req.body;
-    const datosFormulario = JSON.parse(req.body.datosFormulario || '{}');
+    const { id_modelo_entrenado, id_usuario_creador, datosFormulario } = req.body;
+    console.log(' Body recibido:', req.body);
+    
+    if (!id_modelo_entrenado || !id_usuario_creador || !datosFormulario) {
+      return res.status(400).json({ error: 'Faltan campos requeridos' });
+    }
+
+    // Si `datosFormulario` ya es un objeto (no un string), no necesitas parsear.
+    const datosParsed = typeof datosFormulario === 'string' 
+      ? JSON.parse(datosFormulario) 
+      : datosFormulario;
 
     const resultado = await db.tb_resultados_entrenamiento.findByPk(id_modelo_entrenado);
-    if (!resultado) return res.status(404).json({ error: 'Modelo no encontrado' });
+    if (!resultado) {
+      await logActivity('clasificacion_fallida', `Modelo no encontrado con ID ${id_modelo_entrenado}`, id_usuario_creador);
+      return res.status(404).json({ error: 'Modelo no encontrado' });
+    }
 
     const dataset = await db.tb_datasets.findByPk(resultado.id_dataset);
-    if (!dataset) return res.status(404).json({ error: 'Dataset no encontrado' });
+    if (!dataset) {
+      await logActivity('clasificacion_fallida', `Dataset no encontrado para modelo ${id_modelo_entrenado}`, id_usuario_creador);
+      return res.status(404).json({ error: 'Dataset no encontrado' });
+    }
 
     const metadataPath = dataset.archivo;
-    if (!fs.existsSync(metadataPath)) return res.status(404).json({ error: 'Archivo de metadata no encontrado' });
+    if (!fs.existsSync(metadataPath)) {
+      await logActivity('clasificacion_fallida', `Metadata no encontrada en ${metadataPath}`, id_usuario_creador);
+      return res.status(404).json({ error: 'Archivo de metadata no encontrado' });
+    }
 
     // Leer archivo metadata JSON
     const contenidoMetadata = fs.readFileSync(metadataPath, 'utf8');
     const metadataJSON = JSON.parse(contenidoMetadata);
-    const rutaArchivoOriginal = metadataJSON.archivo_original;
+    const rutaArchivoOriginal = metadataJSON[0].archivo_original;
 
     if (!fs.existsSync(rutaArchivoOriginal)) {
+      await logActivity('clasificacion_fallida', `Archivo original no encontrado en ${rutaArchivoOriginal}`, id_usuario_creador);
       return res.status(404).json({ error: 'No se encontró el archivo original para leer columnas' });
     }
 
-    // Leer la primera fila del archivo CSV original para obtener las columnas reales
+    // Leer la primera línea del CSV para obtener columnas
     const stream = fs.createReadStream(rutaArchivoOriginal);
     const rl = readline.createInterface({ input: stream });
-    
-    const columnas = await new Promise((resolve, reject) => {
-    let primeraLinea = '';
 
-    rl.on('line', (line) => {
+    const columnas = await new Promise((resolve, reject) => {
+      let primeraLinea = '';
+
+      rl.on('line', (line) => {
         primeraLinea = line;
-        rl.close(); // Solo la primera línea
+        rl.close();
         stream.destroy();
 
-        // Probar delimitadores comunes
         const porComa = line.split(',').map(c => c.trim());
         const porPuntoComa = line.split(';').map(c => c.trim());
-
         const columnas = porPuntoComa.length > porComa.length ? porPuntoComa : porComa;
-        resolve(columnas);
+        const delimitador = porPuntoComa.length > porComa.length ? ';' : ',';
+
+        resolve({ columnas, delimitador });
+      });
+
+      rl.on('error', reject);
     });
 
-    rl.on('error', reject);
+    const { columnas: cols, delimitador } = columnas;
+
+    let filaOrdenada = {};
+    cols.forEach(col => {
+      filaOrdenada[col] = datosParsed[col] ?? '';
     });
 
-    // Construir objeto ordenado según las columnas reales
-    const filaOrdenada = {};
-    columnas.forEach(col => {
-      filaOrdenada[col] = datosFormulario[col] ?? '';
-    });
+    const csv = parse([filaOrdenada], { fields: cols, delimiter: delimitador });
 
-    // Convertir en CSV
-    const csv = parse([filaOrdenada], { fields: columnas, delimiter: ';' });
     const nombreArchivoTemp = `temp_${Date.now()}.csv`;
     const rutaCsvTemp = path.join('FormularioCsvTem', nombreArchivoTemp);
+
+    // Asegurar que la carpeta existe
+    if (!fs.existsSync('FormularioCsvTem')) {
+      fs.mkdirSync('FormularioCsvTem');
+    }
+
     fs.writeFileSync(rutaCsvTemp, csv);
 
-    // Ejecutar script Python
-    const python = spawn('python', [
+    await logActivity('clasificacion_inicio', `Clasificación desde formulario iniciada para modelo ${id_modelo_entrenado}`, id_usuario_creador);
+
+    const python = spawn(pythonExecutable, [
       'scripts/clasificar_formulario.py',
       resultado.modelo_entrenado,
       metadataPath,
       rutaCsvTemp
     ]);
+
 
     let salida = '';
     let error = '';
@@ -486,28 +512,37 @@ router.post('/clasificar/formulario', async (req, res) => {
     python.stdout.on('data', data => salida += data.toString());
     python.stderr.on('data', data => error += data.toString());
 
-    python.on('close', code => {
-      fs.unlinkSync(rutaCsvTemp); // Limpieza del archivo temporal
+    python.on('close', async (code) => {
+      fs.unlinkSync(rutaCsvTemp); // Eliminar archivo temporal
 
       if (code !== 0) {
+        await logActivity('clasificacion_fallida', `Error en script Python: ${error}`, id_usuario_creador);
         return res.status(500).json({ error: 'Error al clasificar', detalles: error });
       }
 
       try {
         const resultadoFinal = JSON.parse(salida);
+
         if (resultadoFinal.error) {
+          await logActivity('clasificacion_fallida', resultadoFinal.error, id_usuario_creador);
           return res.status(400).json({ error: resultadoFinal.error });
         }
+
+        await logActivity('clasificacion_exitosa', `Clasificación exitosa desde formulario con modelo ${id_modelo_entrenado}`, id_usuario_creador);
         return res.status(200).json({ message: 'Clasificación completada', resultado: resultadoFinal });
+
       } catch (e) {
+        await logActivity('clasificacion_fallida', 'Error al parsear salida de clasificador', id_usuario_creador);
         return res.status(500).json({ error: 'Error al procesar la respuesta del clasificador' });
       }
     });
 
   } catch (err) {
     console.error('Error en clasificación con formulario:', err);
+    await logActivity('clasificacion_error', `Error general en clasificación desde formulario: ${err.message}`, req.body.id_usuario_creador);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
+
 
 module.exports = router;

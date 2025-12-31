@@ -1,0 +1,74 @@
+    <div class="pagetitle">
+        <h1>Panel de Actividades del Sistema</h1>
+    </div><!-- End Page Title -->
+  
+  <section class="section dashboard">
+    
+    <div class="card">
+
+        <div class="card-body">
+          <h5 class="card-title"> Actividades </h5>
+          <!-- Tabla de todas las ofertas -->
+          <p-table
+            #dt1
+            [value]="lsListado"
+            dataKey="id_actividad"
+            [rows]="10"
+            [showCurrentPageReport]="true"
+            [rowsPerPageOptions]="[10, 25, 50]"
+            [paginator]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [globalFilterFields]="['id_actividad','usuario.nombre', 'detalles']"
+            [scrollable]="true"
+            scrollHeight="500px"
+            [tableStyle]="{ 'min-width': '40rem' }"
+            [sortMode]="'single'"
+        >
+            <ng-template pTemplate="caption">
+                <div class="flex">
+                    <button pButton label="Clear" class="p-button-outlined" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
+                    <span class="p-input-icon-left ml-auto">
+                        <input pInputText type="text" (input)="applyFilter($event)" placeholder="Buscar" />
+                    </span>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="id_actividad">
+                        <div class="flex align-items-center">
+                            Id <p-sortIcon field="id_actividad"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="detalles">
+                        <div class="flex align-items-center">
+                            Detalles <p-sortIcon field="detalles"></p-sortIcon>
+                        </div>
+                    </th>
+                    <th pSortableColumn="usuario.nombre">
+                        <div class="flex align-items-center">
+                            Usuario <p-sortIcon field="usuario.nombre"></p-sortIcon>
+                        </div>
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-customer>
+                <tr>
+                    <td>{{ customer.id_actividad }}</td>
+                    <td>{{ customer.detalles}}</td>
+                    <td>{{ customer.usuario.nombre}}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="5">No se encontraron Logs.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+          
+        </div>
+
+      </div>
+    
+  </section>
+  
+

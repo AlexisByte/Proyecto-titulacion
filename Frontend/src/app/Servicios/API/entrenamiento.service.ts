@@ -3,23 +3,21 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { LoginService } from '../../Servicios/login.service';
 import { catchError } from 'rxjs/operators';
-import { UrlServiciosWebService } from '../../Servicios/url-servicios-web.service';
+import { API_CONFIG } from './../../../config/api -config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EntrenamientoService {
 
-  private apiUrl: string;
+  private apiUrl = `${API_CONFIG.BASE_URL}/api/resultados-entrenamiento`;
 
   constructor(
     private http: HttpClient,
     private auth: LoginService,
-    private urlService: UrlServiciosWebService,
 
   ) {
-    this.apiUrl = `${this.urlService.urlServiciosTest}/api/resultados-entrenamiento`;
-   }
+  }
 
   private getHeaders(isFormData = false) {
     const token = this.auth.getToken();

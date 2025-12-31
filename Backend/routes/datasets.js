@@ -81,8 +81,12 @@ router.post('/', upload.single('archivo'), async (req, res) => {
       return res.status(404).json({ message: 'El usuario creador no existe.' });
     }
 
+    //const pythonExecutable = '/root/Proyecto-titulacion/Backend/venv/bin/python'; //linux
+    const pythonExecutable = path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe'); //windows
+
+
     // Ejecutar el script de Python para procesar el CSV de manera asíncrona
-    const pythonProcess = spawn('python', [
+    const pythonProcess = spawn(pythonExecutable, [
       'scripts/procesar_csv.py', 
       filePath,
       '20000' // Tamaño de chunk como segundo argumento
@@ -257,7 +261,6 @@ router.get('/:id', async (req, res) => {
 // Eliminar un dataset
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
-  const { id_usuario } = req.body;
 
   try {
     const dataset = await db.tb_datasets.findByPk(id);
@@ -297,8 +300,8 @@ router.delete('/:id', async (req, res) => {
     await dataset.destroy();
 
     // Registrar actividad
-    if (id_usuario) {
-      logActivity('dataset_eliminado', `Dataset ${dataset.nombre} eliminado`, id_usuario);
+    if (req.usuario && req.usuario.id_usuario) {
+      logActivity('dataset_eliminado', `Dataset ${dataset.nombre} eliminado`, res.usuario.id_usuario);
     }
 
     res.status(200).json({ message: 'Dataset eliminado correctamente.' });

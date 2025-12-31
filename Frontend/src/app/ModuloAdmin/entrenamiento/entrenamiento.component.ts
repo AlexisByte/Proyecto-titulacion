@@ -225,7 +225,7 @@ export class EntrenamientoComponent {
 
     try {
           const { ModeloSeleccionado, DatasetSeleccionado,skip_columns,test_size,random_state } = form.value;  
-          const id = this.serviciolog.getUser1();
+          const id = this.serviciolog.getUserLocal();
           
           if (!id?.id_usuario) {
             this.notificationService.showError("Usuario no autenticado.");

@@ -14,10 +14,10 @@ import { NgChartsModule } from 'ng2-charts';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './template/login/login.component';
-import { RegisterComponent } from './template/register/register.component';
-import { InicioportadaComponent } from './template/inicioportada/inicioportada.component';
-import { RolesComponent } from './template/roles/roles.component';
+import { LoginComponent } from './Template/login/login.component';
+import { RegisterComponent } from './Template/register/register.component';
+import { InicioportadaComponent } from './Template/inicioportada/inicioportada.component';
+import { RolesComponent } from './Template/roles/roles.component';
 import { InicioAdminComponent } from './ModuloAdmin/inicio-admin/inicio-admin.component';
 import { InicioGerenteComponent } from './ModuloGerente/inicio-gerente/inicio-gerente.component';
 import { InicioVentanillaComponent } from './ModuloVentanilla/inicio-ventanilla/inicio-ventanilla.component';
@@ -33,6 +33,7 @@ import { EntrenamientoComponent } from './ModuloAdmin/entrenamiento/entrenamient
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ModelosIAComponent } from './ModuloAdmin/modelos-ia/modelos-ia.component';
 import { ClasificarComponent } from './ModuloAdmin/clasificar/clasificar.component';
+import { ActividadesComponent } from './ModuloAdmin/actividades/actividades.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { ClasificarComponent } from './ModuloAdmin/clasificar/clasificar.compone
     EntrenamientoComponent,
     ModelosIAComponent,
     ClasificarComponent,
+    ActividadesComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,7 +71,8 @@ import { ClasificarComponent } from './ModuloAdmin/clasificar/clasificar.compone
     ButtonModule,
     DialogModule,
     ToastModule,
-    TagModule
+    TagModule,
+    NgChartsModule, 
   ],
   exports:[
     GesUsuariosComponent,

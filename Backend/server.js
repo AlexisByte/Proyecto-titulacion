@@ -1,26 +1,33 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const db = require('./models'); // Asegúrate de que el archivo de modelos está bien configurado
+const db = require('./models');
 const passport = require('passport');
 const path = require('path');
-
 
 const passportJWT = require('passport-jwt');
 const { Strategy, ExtractJwt } = passportJWT;
 
-//require('./config/passport')(passport);
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
-app.use(bodyParser.json());
+// ✅ Middleware CORS debe ir primero
+app.use(cors({
+  origin: ['https://tufinanciera.app', 'https://www.tufinanciera.app','http://localhost:4200'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Opcional para manejar preflight
+app.options('*', cors());
 
 app.use(bodyParser.json({ limit: '500mb' }));
 app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
+
 app.use('/clasificados', express.static(path.join(__dirname, 'clasificados')));
 
+// JWT config
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: 'secret'
@@ -28,8 +35,6 @@ const jwtOptions = {
 
 passport.use(new Strategy(jwtOptions, async (jwt_payload, done) => {
   try {
-    // Aquí puedes agregar la lógica para buscar al usuario por su id
-    // por ejemplo: const user = await User.findById(jwt_payload.id);
     return done(null, jwt_payload);
   } catch (error) {
     return done(error, false);
@@ -38,10 +43,8 @@ passport.use(new Strategy(jwtOptions, async (jwt_payload, done) => {
 
 const verificarToken = require('./controllers/auth');
 
-// Ruta de login
+// Rutas
 app.use('/api/login', require('./routes/login'));
-
-// Rutas protegidas
 app.use('/api/users', verificarToken, require('./routes/users'));
 app.use('/api/roles', require('./routes/roles'));
 app.use('/api/users-roles', verificarToken, require('./routes/users_roles'));
@@ -51,8 +54,12 @@ app.use('/api/reportes', verificarToken, require('./routes/reportes'));
 app.use('/api/evaluaciones', verificarToken, require('./routes/evaluaciones'));
 app.use('/api/datasets', verificarToken, require('./routes/datasets'));
 app.use('/api/resultados-entrenamiento', verificarToken, require('./routes/resultados-entrenamientos'));
+app.use('/api/logs',verificarToken, require('./routes/actividades')); 
 app.use('/api', verificarToken, require('./routes/password'));
+require('./utils/limpiarArchivosTemporales')();
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Arranque del servidor
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
 });
+

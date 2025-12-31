@@ -3,22 +3,20 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { LoginService } from '../../Servicios/login.service';
 import { catchError } from 'rxjs/operators';
-import { UrlServiciosWebService } from '../../Servicios/url-servicios-web.service';
+import { API_CONFIG } from './../../../config/api -config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RolesService {
-  private apiUrl: string;
+  private apiUrl = `${API_CONFIG.BASE_URL}/api/roles`;
 
   constructor(
     private http: HttpClient,
     private auth: LoginService,
-    private urlService: UrlServiciosWebService,
 
   ) {
-    this.apiUrl = `${this.urlService.urlServiciosTest}/api/roles`;
-   }
+  }
 
 
   private getHeaders() {
@@ -30,7 +28,12 @@ export class RolesService {
   }
 
   obtenerRoles(): Observable<any> {
-    return this.http.get<any>(this.apiUrl, { headers: this.getHeaders() });
+    return this.http.get<any>(this.apiUrl).pipe(
+      catchError((error) => {
+        console.error('Error al obtener roles:', error);
+        return throwError(() => new Error('No se pudo obtener los roles'));
+      })
+    );
   }
 
   agregarRoles(usuario: { nombre_rol: string; descripcion: string }): Observable<any> {
@@ -52,6 +55,11 @@ export class RolesService {
   }
 
   eliminarRoles(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() }).pipe(
+      catchError((error) => {
+        console.error('Error al eliminar rol:', error);
+        return throwError(() => new Error('No se pudo eliminar el rol'));
+      })
+    );
   }
 }

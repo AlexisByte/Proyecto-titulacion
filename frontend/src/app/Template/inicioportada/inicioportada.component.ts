@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./inicioportada.component.css']
 })
 export class InicioportadaComponent {
+   menuAbierto: boolean = false;
 
+  toggleMenu(): void {
+    this.menuAbierto = !this.menuAbierto;
+  }
 }

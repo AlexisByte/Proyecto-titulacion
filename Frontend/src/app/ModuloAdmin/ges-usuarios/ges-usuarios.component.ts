@@ -83,7 +83,7 @@ export class GesUsuariosComponent {
   }
 
   async ListadoInformacion() {
-    const id_user = this.servicioLog.getUser1().id_usuario;
+    const id_user = this.servicioLog.getUserLocal().id_usuario;
     //console.log('Formulario válido:', id_user);
     this.lsListado = await new Promise<any>(resolve => {
       this.serviciosUsuarios.obtenerUsuarios().subscribe(usuarios => {

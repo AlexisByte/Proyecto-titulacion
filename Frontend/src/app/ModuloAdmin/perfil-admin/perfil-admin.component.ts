@@ -67,13 +67,15 @@ export class PerfilAdminComponent implements OnInit {
   }
 
   async loadUserData(): Promise<void> {
-    try {
-      this.user = await lastValueFrom(this.authService.getUser());
-    } catch (error) {
-      console.error("Error al obtener datos del usuario:", error);
-      this.user = { usuario: {} }; // En caso de error, evita que sea undefined
-    }
-    //console.log(this.user);
+    this.authService.cargarUsuario().subscribe({
+      next: (user) => {
+        this.user = user;
+        console.log("Usuario cargado:", user);
+      },
+      error: (err) => {
+        console.error("Error al cargar usuario:", err);
+      }
+    });
   }
 
   async loadEditUser(): Promise<void> {

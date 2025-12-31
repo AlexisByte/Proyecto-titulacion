@@ -29,20 +29,20 @@
         </div>
 
         <!-- Botón menú móvil -->
-        <button class="menu-toggle" id="menuToggle">
+        <button class="menu-toggle" (click)="toggleMenu()">
           <i class="material-icons">menu</i>
         </button>
       </div>
 
       <!-- Menú Móvil -->
-      <div class="mobile-menu" id="mobileMenu">
-        <a href="#" class="nav-link">Inicio</a>
-        <a href="#" class="nav-link">Productos</a>
-        <a href="#" class="nav-link">Nosotros</a>
-        <a href="#" class="nav-link">Contacto</a>
-        <button class="btn btn-login" routerLink="/login" >Iniciar Sesión</button>
-        <button class="btn btn-primary" routerLink="/register">Registrarse</button>
-              </div>
+      <div class="mobile-menu" [ngClass]="{ 'hidden': !menuAbierto, 'block': menuAbierto }">
+        <a href="#" class="nav-link" (click)="menuAbierto = false">Inicio</a>
+        <a href="#" class="nav-link" (click)="menuAbierto = false">Productos</a>
+        <a href="#" class="nav-link" (click)="menuAbierto = false">Nosotros</a>
+        <a href="#" class="nav-link" (click)="menuAbierto = false">Contacto</a>
+        <button class="btn btn-login" routerLink="/login" (click)="menuAbierto = false">Iniciar Sesión</button>
+        <button class="btn btn-primary" routerLink="/register" (click)="menuAbierto = false">Registrarse</button>
+      </div>
     </div>
   </nav>
 

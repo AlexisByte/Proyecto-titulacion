@@ -2,10 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard'; // Importa el guard
 
-import { InicioportadaComponent } from './template/inicioportada/inicioportada.component';
-import { LoginComponent } from './template/login/login.component';
-import { RegisterComponent } from './template/register/register.component';
-import { RolesComponent } from './template/roles/roles.component';
+import { InicioportadaComponent } from './Template/inicioportada/inicioportada.component';
+import { LoginComponent } from './Template/login/login.component';
+import { RegisterComponent } from './Template/register/register.component';
+import { RolesComponent } from './Template/roles/roles.component';
 import { InicioAdminComponent } from './ModuloAdmin/inicio-admin/inicio-admin.component';
 import { InicioGerenteComponent } from './ModuloGerente/inicio-gerente/inicio-gerente.component';
 import { InicioVentanillaComponent } from './ModuloVentanilla/inicio-ventanilla/inicio-ventanilla.component';

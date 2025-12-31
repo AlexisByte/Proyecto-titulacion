@@ -14,12 +14,10 @@ import { NotificationService } from '../../Servicios/notification-service.servic
     "../../../assets/vendor/bootstrap-icons/bootstrap-icons.css"]
 })
 export class PerfilGerenteComponent implements OnInit{
-
   user: any = { usuario: {} }; // Evita errores de acceso a propiedades
   email:string = '';
   editUser: any = {};
   nombre: string = '';
-
   currentPassword: string = '';
   newPassword: string = '';
   renewPassword: string = '';
@@ -97,6 +95,10 @@ export class PerfilGerenteComponent implements OnInit{
   async GuardarCambiosPerfil(form: any) {
     if (form.valid) { 
       try {
+        if(this.nombre == this.editUser.usuario.nombre){
+          this.notificationService.showError("Realice algun cambio para guardar");
+          return
+        }
         const { nombre, email } = form.value;  
         const edit = { nombre, email };
   

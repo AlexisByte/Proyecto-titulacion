@@ -43,8 +43,7 @@ const logActivity = async (action, details, userId) => {
     await db.tb_actividad.create({
       accion: action,
       detalles: details,
-      id_usuario: userId,
-      fecha: new Date()
+      id_usuario: userId
     });
   } catch (error) {
     console.error('Error al registrar actividad:', error);
@@ -101,6 +100,9 @@ router.post('/', upload.single('contenido'), async (req, res) => {
       contenido: req.file.path, // Guardar la ruta del archivo en la base de datos
     });
 
+    await logActivity('Modelo IA creado', `Modelo IA ${nuevaVersion.nombre_modelo} creado`, id_usuario_creador);
+
+
     res.status(201).json({
       message: 'Versión de modelo creada exitosamente.',
       id_version: nuevaVersion.id_version,
@@ -111,6 +113,7 @@ router.post('/', upload.single('contenido'), async (req, res) => {
       nombre_archivo: nuevaVersion.contenido.split('-').slice(1).join('-')
     });
   } catch (error) {
+    await logActivity('Error creando Modelo IA', error.message, id_usuario_creador);
     res.status(500).json({ error: error.message });
   }
 });
@@ -176,6 +179,8 @@ router.put('/:id', upload.single('contenido'), async (req, res) => {
     // Extraer el nombre del archivo para la respuesta
     const nombreArchivo = nuevoContenido ? path.basename(nuevoContenido) : null;
 
+    await logActivity('Modelo IA modificado', `Modelo IA ${id} modificado`, id_usuario_creador);
+
     res.status(200).json({
       message: 'Versión de modelo actualizada exitosamente.',
       id_version: versionExistente.id_version,
@@ -188,6 +193,7 @@ router.put('/:id', upload.single('contenido'), async (req, res) => {
 
   } catch (error) {
     console.error("Error al actualizar modelo:", error);
+    await logActivity('Error modificando Modelo IA', error.message, id_usuario_creador);
     res.status(500).json({ error: error.message });
   }
 });
@@ -229,41 +235,12 @@ router.delete('/:id', async (req, res) => {
 
     // Eliminar el registro de la base de datos
     await versionExistente.destroy();
+    
+    await logActivity('Modelo IA eliminado', `Modelo IA ${id} eliminado`, req.usuario.id_usuario);
 
     res.status(200).json({ message: 'Modelo eliminado exitosamente.' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Ruta para entrenar y evaluar el modelo
-router.post('/train', async (req, res) => {
-  try {
-    const { id_version } = req.body;
-    
-    const modelo = await db.tb_versiones_modelos.findByPk(id_version);
-    if (!modelo) {
-      return res.status(404).json({ error: 'Modelo no encontrado' });
-    }
-
-    // Ejecutar el script principal de IA en Python
-    const pythonProcess = spawn('python', ['../scripts/train_model.py', modelo.contenido]);
-
-    let scriptOutput = '';
-    pythonProcess.stdout.on('data', (data) => {
-      scriptOutput += data.toString();
-    });
-
-    pythonProcess.stderr.on('data', (data) => {
-      console.error(`Error en el script: ${data}`);
-    });
-
-    pythonProcess.on('close', (code) => {
-      console.log(`Proceso finalizado con código ${code}`);
-      res.json({ mensaje: 'Entrenamiento finalizado', salida: scriptOutput });
-    });
-
-  } catch (error) {
+    await logActivity('Error eliminado Modelo IA', error.message, req.usuario.id_usuario);
     res.status(500).json({ error: error.message });
   }
 });

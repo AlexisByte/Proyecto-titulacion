@@ -45,10 +45,10 @@
 <header id="header" class="header fixed-top d-flex align-items-center">
 
   <div class="d-flex align-items-center justify-content-between">
-    <a href="/Administrador">
+    <a href="/Gerente">
       <img src="assets/img/hero-imsg.png" height="50px" width="auto">
     </a>
-    <a href="/Administrador" class="logo d-flex align-items-center">
+    <a href="/Gerente" class="logo d-flex align-items-center">
       <span class="d-none d-lg-block">Tufinanciera</span>
     </a>
     <!--</i><i class="bi bi-list toggle-sidebar-btn"></i>-->
@@ -69,7 +69,7 @@
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile"  *ngIf="menus['profile']" style="right: 15px !important; top: 45px !important;">
           <li class="dropdown-header">
             <h6>{{ dato?.usuario?.nombre }}</h6>
-            <span>Gerente </span>
+            <span>Gerente</span>
           </li>
           <li>
             <hr class="dropdown-divider">
@@ -95,7 +95,7 @@
   <ul class="sidebar-nav" id="sidebar-nav">
     
     <li class="nav-item">
-      <a class="nav-link " [ngClass]="{'collapsed': collapsed}" href="/Administrador">        <i class="bi bi-grid"></i>
+      <a class="nav-link " [ngClass]="{'collapsed': collapsed}" href="/Gerente">        <i class="bi bi-grid"></i>
         <span>Panel Principal</span>
       </a>
     </li><!-- End Dashboard Nav -->
@@ -107,45 +107,47 @@
      <i class="bi bi-menu-button-wide"></i>
      <span>Gestión</span>
      <i class="bi bi-chevron-down ms-auto"></i>
-   </a>
-   <ul id="components-nav" 
-   class="nav-content collapse" 
-   [ngClass]="{'show': menus['gestion']}" 
-   data-bs-parent="#sidebar-nav">
-        <li>
-          <a href="" (click)="SeccionUsuarios($event)" [ngClass]="{'active': activeSection === 'Usuarios'}">
-            <i class="bi bi-circle"></i><span>Usuarios</span>
-          </a>
-        </li>
-        <li>
-          <a href=""(click)="SeccionRoles($event)" [ngClass]="{'active': activeSection === 'Roles'}">
-            <i class="bi bi-circle"></i><span>Roles</span>
-          </a>
-        </li>
-        <li>
-          <a href="" (click)="SeccionModelos($event)" [ngClass]="{'active': activeSection === 'Modelos'}">
-            <i class="bi bi-circle"></i><span>Modelos</span>
-          </a>
-        </li>
-        <li>
-          <a href="" (click)="SeccionReglas($event)" [ngClass]="{'active': activeSection === 'Reglas'}">
-            <i class="bi bi-circle"></i><span>Reglas del Negocio</span>
-          </a>
-        </li>
-        <!-- <li>
-          <a href="" >
-            <i class="bi bi-circle"></i><span>Negocios</span>
-          </a>
-        </li>
-        <li >
-          <a href="" >
-            <i class="bi bi-circle"></i><span>Administradores</span>
-          </a>
-        </li> -->
-      </ul>
+      </a>
+    <ul id="components-nav" 
+      class="nav-content collapse" 
+      [ngClass]="{'show': menus['gestion']}" 
+      data-bs-parent="#sidebar-nav">
+            
+            <li>
+              <a href="" (click)="SeccionModelos($event)" [ngClass]="{'active': activeSection === 'Modelos'}">
+                <i class="bi bi-circle"></i><span>Modelos</span>
+              </a>
+            </li>
+            <li>
+              <a href="" (click)="SeccionDataset($event)" [ngClass]="{'active': activeSection === 'Datasets'}">
+                <i class="bi bi-circle"></i><span>Datasets</span>
+              </a>
+            </li>
+
+    </ul>
     </li>
     <li class="nav-heading">Páginas</li>
-  
+ <li class="nav-item">
+      <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'entrenamiento'}" href="" (click)="SeccionEntrenamiento($event)">        
+        <i class="bi bi-gear-fill"></i>
+        <span>Entrenamiento</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'modeloIa'}" href="" (click)="SeccionModeloIa($event)">        
+        <i class="bi bi-cpu-fill"></i>
+        <span>Modelos Entrenados</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'clasificar'}" href="" (click)="SeccionClasificar($event)">        
+        <i class="bi-bar-chart-fill"></i>
+        <span>Clasificar</span>
+      </a>
+    </li>
+
     <li class="nav-item">
       <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'profile'}" href="" (click)="SeccionPerfil($event)">        <i class="bi bi-person"></i>
         <span>Perfil</span>
@@ -161,182 +163,88 @@
       <h1>Panel Principal</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/Administrador">Home</a></li>
-          <li class="breadcrumb-item active">Administración - {{ dato?.nombre }}</li>
+          <li class="breadcrumb-item"><a href="/Gerente">Home</a></li>
+          <li class="breadcrumb-item active">Gerencia - {{ dato?.nombre }}</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
+
+  <!-- cards.component.html -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 p-2">
+    <div class="bg-blue-100 text-blue-800 p-2 rounded-md shadow flex items-center justify-between">
+      <div>
+        <h2 class="text-sm font-semibold">Datasets</h2>
+        <p class="text-lg font-bold">{{ totalDatasets }}</p>
+      </div>
+      <img src="assets/img/dataset.png" class="w-6 h-6 animate-bounce" alt="datasets" />
+    </div>
+
+    <div class="bg-purple-100 text-purple-800 p-2 rounded-md shadow flex items-center justify-between">
+      <div>
+        <h2 class="text-sm font-semibold">Modelos IA</h2>
+        <p class="text-lg font-bold">{{ totalModelosIA }}</p>
+      </div>
+      <img src="assets/img/brain.png" class="w-6 h-6 animate-pulse" alt="modelos IA" />
+    </div>
+
+    <div class="bg-green-100 text-green-800 p-2 rounded-md shadow flex items-center justify-between">
+      <div>
+        <h2 class="text-sm font-semibold">Modelos Entrenados</h2>
+        <p class="text-lg font-bold">{{ totalModelosEntrenados }}</p>
+      </div>
+      <img src="assets/img/settings.png" class="w-6 h-6 animate-spin-slow" alt="entrenados" />
+    </div>
+  </div>
+
+
+  <!-- charts.component.html -->
+  <div class="flex flex-nowrap overflow-x-auto gap-3 p-3 justify-start items-start">
+    <!-- Gráfico de barras -->
+    <div class="bg-white p-4 rounded-xl shadow w-full md:w-[48%]">
+      <h3 class="font-semibold mb-2 text-center">Top 5 Modelos (Barras)</h3>
+      <canvas baseChart
+        [datasets]="barChartData"
+        [labels]="barChartLabels"
+        [options]="barChartOptions"
+        [legend]="true"
+        [type]="'bar'"
+        (chartClick)="onBarClick($event)">
+      </canvas>
+    </div>
+
+    <!-- Gráfico de radar -->
+    <div class="bg-white p-3 rounded-xl shadow w-full md:w-[48%]">
+      <h3 class="font-semibold mb-2 text-center">Métricas por Modelo (Radar)</h3>
+      <canvas baseChart
+        [datasets]="radarChartData"
+        [labels]="radarChartLabels"
+        [options]="radarChartOptions"
+        [legend]="true"
+        [type]="'radar'">
+      </canvas>
+    </div>
+  </div>
   
-    <section class="section dashboard">
-      <!-- Left side columns -->
-        <div class="row">
-
-          <!-- Sales Card -->
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card revenue-card">
-              <div class="card-body">
-                <h5 class="card-title">Usuarios <span>| Activas</span></h5>
-
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="bi bi-plus-slash-minus"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6><span style="font-size: 20px;">ofertas</span></h6>
-                    <a href="" class="text-success small pt-1 fw-bold" (click)="SeccionUsuarios($event)">Agregar usuarios</a>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Sales Card -->
-          <!-- Sales Card -->
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card customers-card">
-              <div class="card-body">
-                <h5 class="card-title">Ofertas <span>| Inactivas</span></h5>
-
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="bi bi-plus-slash-minus"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6><span style="font-size: 20px;">ofertas</span></h6>
-                    <a href="" class="text-success small pt-1 fw-bold" >Agregar Ofertas</a>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Sales Card --> 
-                 
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card revenue-card">
-              <div class="card-body">
-                <h5 class="card-title">Puntos Verdes <span>| Activos</span></h5>
-
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="bi bi-geo-alt-fill"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6><span style="font-size: 20px;">Puntos Verdes</span></h6>
-                    <a href="" class="text-success small pt-1 fw-bold" >Gestión Puntos</a>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Sales Card -->
-          <!-- Sales Card -->
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card customers-card">
-              <div class="card-body">
-                <h5 class="card-title">Puntos Verdes <span>| Inactivas</span></h5>
-
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="bi bi-geo-alt-fill"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6><span style="font-size: 20px;">Puntos Verdes</span></h6>
-                    <a href="" class="text-success small pt-1 fw-bold" >Gestión Puntos</a>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Sales Card --> 
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card revenue-card">
-              <div class="card-body">
-                <h5 class="card-title">Negocios <span>| Activos</span></h5>
-
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class='bx bx-store-alt'></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6><span style="font-size: 20px;">Negocios</span></h6>
-                    <a href="" class="text-success small pt-1 fw-bold" >Gestión Negocios</a>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Sales Card -->
-          <!-- Sales Card -->
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card customers-card">
-              <div class="card-body">
-                <h5 class="card-title">Negocios <span>| Inactivas</span></h5>
-
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class='bx bx-store-alt'></i>                  </div>
-                  <div class="ps-3">
-                    <h6><span style="font-size: 20px;">Negocios</span></h6>
-                    <a href="" class="text-success small pt-1 fw-bold" >Gestión Negocios</a>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Sales Card --> 
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card revenue-card">
-              <div class="card-body">
-                <h5 class="card-title">Ciudadanos <span>| Activos</span></h5>
-
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class='bx bx-user-check'></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6><span style="font-size: 20px;">Ciudadanos</span></h6>
-                    <a href="" class="text-success small pt-1 fw-bold">Gestión Ciudadanos</a>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Sales Card -->
-          <!-- Sales Card -->
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card customers-card">
-              <div class="card-body">
-                <h5 class="card-title">Ciudadanos<span>| Inactivas</span></h5>
-
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class='bx bx-user-x'></i>                  </div>
-                  <div class="ps-3">
-                    <h6><span style="font-size: 20px;">Ciudadanos</span></h6>
-                    <a href="" class="text-success small pt-1 fw-bold" >Gestión Ciudadanos</a>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Sales Card --> 
-          
-        </div>
-         
-    </section>
-  </div>
-  <div *ngIf="seccion === '2'">
-    <app-ges-usuarios></app-ges-usuarios>
-  </div>
-  <div *ngIf="seccion === '3'">
-    <app-ges-roles></app-ges-roles>
   </div>
   <div *ngIf="seccion === '4'">
     <app-ges-modelos></app-ges-modelos>
   </div>
   <div *ngIf="seccion === '5'">
+    <app-ges-datasets></app-ges-datasets>
+  </div>
+  <div *ngIf="seccion === '6'">
     <app-ges-reglas-negocio></app-ges-reglas-negocio>
   </div>
-  <div *ngIf="seccion === '8'">
+  <div *ngIf="seccion === '7'">
+    <app-entrenamiento></app-entrenamiento>
+  </div>
+    <div *ngIf="seccion === '8'">
+    <app-modelos-ia></app-modelos-ia>
+  </div>
+    <div *ngIf="seccion === '9'">
+    <app-clasificar></app-clasificar>
+  </div>
+  <div *ngIf="seccion === '10'">
     <app-perfil-gerente></app-perfil-gerente>
   </div>
   <footer class="footer">

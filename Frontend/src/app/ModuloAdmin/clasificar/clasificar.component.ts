@@ -8,7 +8,7 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { ViewChild } from '@angular/core';
 import { DatasetsService} from '../../Servicios/API/datasets.service';
-import { UrlServiciosWebService } from '../../Servicios/url-servicios-web.service';
+import { API_CONFIG } from '../../../config/api -config';
 import { ChangeDetectorRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
@@ -91,7 +91,6 @@ export class ClasificarComponent {
       private serviciolog: LoginService,
       private servicios:EntrenamientoService,
       private serviciosDataset:DatasetsService,
-      private urlService: UrlServiciosWebService,
       private cdr: ChangeDetectorRef,
 
     ) { }
@@ -226,8 +225,8 @@ cargarMetricasModelo(idSeleccionado: number) {
       return;
     }
 
-    const usuario = this.serviciolog.getUser1();
-    if (!usuario?.id_usuario) {
+    const usuarioLocal = this.serviciolog.getUserLocal();
+    if (!usuarioLocal || !usuarioLocal.id_usuario) {
       this.notificationService.showError("Usuario no autenticado.");
       return;
     }
@@ -241,7 +240,7 @@ cargarMetricasModelo(idSeleccionado: number) {
     this.resultadoFormulario = null;
     const formData = new FormData();
     formData.append('id_modelo_entrenado', this.ModeloSeleccionado.toString());
-    formData.append('id_usuario_creador', usuario.id_usuario.toString());
+    formData.append('id_usuario_creador', usuarioLocal.id_usuario.toString());
 
     const tiempoInicio = performance.now();
 
@@ -268,7 +267,7 @@ cargarMetricasModelo(idSeleccionado: number) {
 
         const resultado = respuesta?.resultado;
         if (resultado?.archivo_salida) {
-          this.archivoClasificado = this.urlService.urlServiciosTest + '/' + resultado.archivo_salida;
+this.archivoClasificado = `${API_CONFIG.BASE_URL}/${resultado.archivo_salida}`;
 
           this.resultadoFormulario = {
             resumen: resultado.resumen,

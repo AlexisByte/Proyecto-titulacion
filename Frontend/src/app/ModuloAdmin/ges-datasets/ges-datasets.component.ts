@@ -126,7 +126,7 @@ export class GesDatasetsComponent {
 
     try {
       const { nombre, descripcion } = form.value;  
-      const id = this.serviciolog.getUser1();
+      const id = this.serviciolog.getUserLocal();
       const nuevo = new FormData();
 
       nuevo.append("nombre", nombre);
@@ -159,9 +159,9 @@ export class GesDatasetsComponent {
 async RegistrarActualizacion(form: any) {
   try {
     const { nombre_dataset, version, descripcion } = form.value || {};
-    const user = this.serviciolog.getUser1();
+    const user = this.serviciolog.getUserLocal();
 
-    if (!user?.id_usuario) {
+    if (!user.id_usuario) {
       this.notificationService.showError("Usuario no autenticado.");
       throw new Error("No se pudo obtener el ID del usuario.");
     }

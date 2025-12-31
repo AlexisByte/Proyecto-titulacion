@@ -17,7 +17,6 @@ export class PerfilVentanillaComponent implements OnInit{
   email:string = '';
   editUser: any = {};
   nombre: string = '';
-
   currentPassword: string = '';
   newPassword: string = '';
   renewPassword: string = '';
@@ -95,6 +94,10 @@ export class PerfilVentanillaComponent implements OnInit{
   async GuardarCambiosPerfil(form: any) {
     if (form.valid) { 
       try {
+        if(this.nombre == this.editUser.usuario.nombre){
+          this.notificationService.showError("Realice algun cambio para guardar");
+          return
+        }
         const { nombre, email } = form.value;  
         const edit = { nombre, email };
   
@@ -149,7 +152,6 @@ export class PerfilVentanillaComponent implements OnInit{
     }
   }
   
-
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

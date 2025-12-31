@@ -1,0 +1,28 @@
+# Manipulación de datos
+pandas
+numpy
+tqdm
+
+# Modelos de clasificación clásicos
+scikit-learn
+
+# Boosting avanzado (por si decides experimentar)
+lightgbm
+catboost
+
+# Guardado de modelos
+joblib
+
+# Visualización y métricas (opcional pero recomendable)
+matplotlib
+seaborn
+scipy
+
+# Preprocesamiento y balanceo
+imbalanced-learn
+
+# Optimización de modelos
+optuna
+
+# Cobertura de código
+gcovr

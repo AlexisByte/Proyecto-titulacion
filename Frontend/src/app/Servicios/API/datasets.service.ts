@@ -3,22 +3,19 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { LoginService } from '../../Servicios/login.service';
 import { catchError } from 'rxjs/operators';
-import { UrlServiciosWebService } from '../../Servicios/url-servicios-web.service';
+import { API_CONFIG } from './../../../config/api -config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatasetsService {
-  private apiUrl: string;
+  private apiUrl = `${API_CONFIG.BASE_URL}/api/datasets`;
 
   constructor(
     private http: HttpClient,
     private auth: LoginService,
-    private urlService: UrlServiciosWebService,
-
   ) {
-    this.apiUrl = `${this.urlService.urlServiciosTest}/api/datasets`;
-   }
+  }
 
   private getHeaders(isFormData = false) {
     const token = this.auth.getToken();
@@ -42,8 +39,8 @@ export class DatasetsService {
       headers: this.getHeaders(true) // No agrega Content-Type manualmente
     }).pipe(
       catchError((error) => {
-        console.error('Error al subir modelo:', error);
-        return throwError(() => new Error('No se pudo subir el modelo'));
+        console.error('Error al subir Dataset:', error);
+        return throwError(() => new Error('No se pudo subir el Dataset'));
       })
     );
   }

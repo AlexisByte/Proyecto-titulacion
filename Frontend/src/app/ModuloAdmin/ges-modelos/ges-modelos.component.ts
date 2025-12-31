@@ -106,7 +106,7 @@ export class GesModelosComponent {
 
     try {
       const { nombre_modelo, version, descripcion } = form.value;  
-      const id = this.serviciolog.getUser1();
+      const id = this.serviciolog.getUserLocal();
       const nuevo = new FormData();
 
       nuevo.append("nombre_modelo", nombre_modelo);
@@ -135,7 +135,7 @@ export class GesModelosComponent {
 async RegistrarActualizacion(form: any) {
   try {
     const { nombre_modelo, version, descripcion } = form.value || {};
-    const user = this.serviciolog.getUser1();
+    const user = this.serviciolog.getUserLocal();
 
     console.log("Usuario obtenido:", user);
 
