@@ -104,12 +104,47 @@ def clasificar_en_chunks(modelo_path, metadata_path, metadata_ruta_csv, chunk_si
     fin = time.time()
     tiempo_procesamiento = round(fin - inicio, 2)
 
+    pdf_generado = None
+
+    if total_filas_clasificadas <= 20:
+        from reportlab.lib.pagesizes import A4
+        from reportlab.pdfgen import canvas
+
+        nombre_pdf = salida_csv.replace(".csv", ".pdf")
+        c = canvas.Canvas(nombre_pdf, pagesize=A4)
+        width, height = A4
+
+        y = height - 50
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(50, y, "Informe de Clasificación Crediticia")
+        y -= 30
+
+        c.setFont("Helvetica", 11)
+        for i, clase in enumerate(todas_predicciones, start=1):
+            explicacion = {
+                "good": "Perfil con bajo riesgo crediticio.",
+                "standard": "Perfil con riesgo medio, requiere validación.",
+                "poor": "Perfil con alto riesgo crediticio."
+            }.get(clase, "Clasificación no determinada.")
+
+            c.drawString(50, y, f"Registro {i}: {clase.upper()} → {explicacion}")
+            y -= 18
+
+            if y < 50:
+                c.showPage()
+                y = height - 50
+
+        c.save()
+        pdf_generado = nombre_pdf
+    
     print(json.dumps({
         "archivo_salida": salida_csv,
+        "archivo_pdf": pdf_generado,
         "resumen": resumen,
         "filas_clasificadas": total_filas_clasificadas,
         "tiempo_procesamiento_seg": tiempo_procesamiento
     }))
+    
 
 
 if __name__ == "__main__":

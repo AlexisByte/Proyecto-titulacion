@@ -1,0 +1,2 @@
+nombre_reporte,score_equifax,score_reglas,score_interno,riesgo_final,datos_equifax
+Reporte Equifax 2026-01-20 18:37:48,921,60.0,34.61,RIESGO ALTO,"{'numero_documento': 1727728832, 'nombre': 'MONTENEGRO PILLAJO GUSTAVO MATEO', 'score_equifax': 921, 'num_operaciones_historicas': 1, 'num_operaciones_vigentes': 1, 'num_operaciones_vencidas': 0, 'saldo_por_vencer': 1061.09, 'saldo_vencido': 0.0, 'saldo_demanda': 0.0, 'saldo_castigado': 0.0, 'vencidos_actuales': 0.0, 'dias_vencidos_actual': 0, 'dias_vencidos_historico': 0, 'max_dias_vencido': 0}"

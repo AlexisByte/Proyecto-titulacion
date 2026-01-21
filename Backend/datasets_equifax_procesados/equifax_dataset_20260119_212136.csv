@@ -1,0 +1,7 @@
+numero_documento,nombre_titular,score_equifax,num_ops_historicas,num_ops_vigentes,num_ops_vencidas,saldo_por_vencer,nuevos_creditos,saldo_vencido,saldo_demanda,saldo_castigado,max_dias_vencido,total_saldo_negativo,ratio_morosidad
+1727464677,,69,6,5,5,0.0,0.0,138.32,0.0,8267.63,995,8405.949999999999,0.7142857142857143
+1003755517,,117,7,2,2,0.0,0.0,1189.51,0.0,348.0,32,1537.51,0.25
+1728013325,,855,1,1,0,58.55,58.55,0.0,0.0,0.0,0,0.0,0.0
+1001702644,,221,4,2,2,2564.08,0.0,16850.96,144444.78,0.0,641,161295.74,0.4
+1727728832,,921,1,1,0,1061.09,0.0,0.0,0.0,0.0,0,0.0,0.0
+1723182638,,963,1,0,0,0.0,0.0,0.0,0.0,0.0,0,0.0,0.0

@@ -1,0 +1,2 @@
+nombre_reporte,score_equifax,score_reglas,score_interno,riesgo_final,datos_equifax
+Reporte Equifax 2026-01-20 18:11:44,221,7,4.61,RIESGO ALTO,"{'numero_documento': 1001702644, 'nombre': 'QUISHPE PEÑA ANGEL EDUARDO', 'score_equifax': 221, 'num_operaciones_historicas': 4, 'num_operaciones_vigentes': 2, 'num_operaciones_vencidas': 2, 'saldo_por_vencer': 2564.08, 'saldo_vencido': 16850.96, 'saldo_demanda': 144444.78, 'saldo_castigado': 0.0, 'vencidos_actuales': 619.0, 'dias_vencidos_actual': 619, 'dias_vencidos_historico': 641, 'max_dias_vencido': 641}"

@@ -19,6 +19,7 @@ Chart.register(...registerables, ChartDataLabels);
   templateUrl: './entrenamiento.component.html',
   styleUrls: ['./entrenamiento.component.css']
 })
+
 export class EntrenamientoComponent {
   ModeloSeleccionado: number | null = null;
   DatasetSeleccionado: number | null = null;
@@ -41,7 +42,7 @@ export class EntrenamientoComponent {
   lsListadoData:any=[];
 
   matrizConfusion: number[][] = [];
-  etiquetas: string[][] = [];
+  etiquetas: string[] = [];
   precision : number=0;
   exactitud : number=0;
   recall : number=0;
@@ -174,7 +175,6 @@ export class EntrenamientoComponent {
 
    async ngOnInit() {
     await this.ListadoInformacion();
-    this.prepararDatosGraficos();
   }
 
   async ListadoInformacion() {
@@ -250,31 +250,30 @@ export class EntrenamientoComponent {
           this.tiempoProcesamiento = this.formatearDuracion(duracionMs);
           this.procesado = true; // Marca como procesado
 
-          if (data?.message) {
-            console.log("Respuesta Servidor:\n" + JSON.stringify(data, null, 2));
-            this.notificationService.showSuccess(data.message);
-            this.menus['Dashboard'] = true;
+         if (data?.message) {
+          this.notificationService.showSuccess(data.message);
+          this.menus['Dashboard'] = true;
 
-            const res = data.nuevoResultado;
-            const matrizObj = JSON.parse(res.matriz_confusion);
-            this.matrizConfusion = matrizObj.matriz;
-            this.etiquetas = matrizObj.etiquetas;
+          const res = data.entrenamiento;
 
-            this.precision = res.precision;
-            this.exactitud = res.exactitud;
-            this.recall = res.recall;
-            this.f1Score = res.f1_score;
-            
-            // Actualizar gráficos
-            this.actualizarGraficos();
+          const matrizObj = typeof res.matriz_confusion === 'string'
+            ? JSON.parse(res.matriz_confusion)
+            : res.matriz_confusion;
 
-            // Actualizar gráfico de dona
-            this.prepararDatosGraficos();
+          this.matrizConfusion = matrizObj.matriz;
+          this.etiquetas = matrizObj.etiquetas;
 
-            this.entrenamientoCompletado = true;
-            this.cargando = false;
+          this.precision = res.precision;
+          this.exactitud = res.exactitud;
+          this.recall = res.recall;
+          this.f1Score = res.f1_score;
 
-          }
+          this.actualizarGraficos();
+          this.prepararDatosGraficos();
+
+          this.entrenamientoCompletado = true;
+        }
+
     
           // Cerrar modal, actualizar lista y desactivar el formulario
           form.form.disable();   // 🔒 Desactiva todo el formulario
@@ -299,9 +298,9 @@ export class EntrenamientoComponent {
   actualizarGraficos(): void {
     // Actualizar datos del gráfico de barras
     this.barChartData.datasets[0].data = [
-      this.precision, 
-      this.exactitud, 
-      this.recall, 
+      this.precision,
+      this.exactitud,
+      this.recall,
       this.f1Score
     ];
 

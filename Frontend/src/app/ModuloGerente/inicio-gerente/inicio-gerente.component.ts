@@ -234,5 +234,12 @@ export class InicioGerenteComponent implements OnInit{
       this.collapsed = true; // Colapsa la sección de gestión
       this.seccion = '10';
     }
+    SeccionEquifax(event: Event) {
+      event.preventDefault();
+      this.setActiveMenu('equifax'); // Marca el menú "Perfil" como activo
+      this.setActiveSection(''); // Limpia la sección activa
+      this.collapsed = true; // Colapsa la sección de gestión
+      this.seccion = '12';
+    } 
 
 }

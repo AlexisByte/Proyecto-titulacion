@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const db = require('../models');
-
+const getPythonExecutable = require('../services/PythonExecutableAutodetect');
 
 // Configuración de multer
 const storage = multer.diskStorage({
@@ -34,6 +34,29 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+const equifaxUpload = multer({
+  storage,
+  limits: {
+    fileSize: 1024 * 1024 * 500// 500MB por archivo
+  },
+  fileFilter: (req, file, cb) => {
+    const allowed = [
+      'application/pdf',
+      'text/xml',
+      'application/xml'
+    ];
+
+    if (
+      allowed.includes(file.mimetype) ||
+      file.originalname.endsWith('.pdf') ||
+      file.originalname.endsWith('.xml')
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten archivos PDF o XML de Equifax'));
+    }
+  }
+});
 
 // Configurar límites para archivos grandes
 const upload = multer({
@@ -60,7 +83,9 @@ const logActivity = async (action, details, userId) => {
 
 // Crear un nuevo dataset con un archivo .csv
 router.post('/', upload.single('archivo'), async (req, res) => {
-  const { nombre, descripcion, id_usuario_creador } = req.body;
+  const { nombre, descripcion } = req.body;
+  const id_usuario_creador = req.usuario.id_usuario;
+
   let filePath = null;
 
   try {
@@ -81,12 +106,8 @@ router.post('/', upload.single('archivo'), async (req, res) => {
       return res.status(404).json({ message: 'El usuario creador no existe.' });
     }
 
-    //const pythonExecutable = '/root/Proyecto-titulacion/Backend/venv/bin/python'; //linux
-    const pythonExecutable = path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe'); //windows
-
-
     // Ejecutar el script de Python para procesar el CSV de manera asíncrona
-    const pythonProcess = spawn(pythonExecutable, [
+    const pythonProcess = spawn(getPythonExecutable(), [
       'scripts/procesar_csv.py', 
       filePath,
       '20000' // Tamaño de chunk como segundo argumento
@@ -162,19 +183,120 @@ router.post('/', upload.single('archivo'), async (req, res) => {
   } catch (error) {
     console.error('Error en la ruta POST /datasets:', error);
     
-    // Si ya respondimos al cliente, no podemos enviar otra respuesta
-    if (responseStatus !== 202) {
-      // Limpiar el archivo si ocurrió un error
-      if (filePath && fs.existsSync(filePath)) {
-        fs.unlink(filePath, (unlinkErr) => {
-          if (unlinkErr) console.error('Error al eliminar el archivo:', unlinkErr);
-        });
-      }
-      
-      res.status(500).json({ error: error.message });
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlink(filePath, (unlinkErr) => {
+        if (unlinkErr) console.error('Error al eliminar el archivo:', unlinkErr);
+      });
     }
+    res.status(500).json({ error: error.message });
   }
 });
+
+router.post('/equifax', equifaxUpload.array('archivos', 15), async (req, res) => {
+  const id_usuario = req.usuario.id_usuario;
+
+  if (!req.files || req.files.length < 1 || req.files.length > 15) {
+    return res.status(400).json({
+      message: 'Debe subir mínimo 1 y máximo 15 archivos Equifax.'
+    });
+  }
+
+  try {
+    const usuario = await db.tb_usuarios.findByPk(id_usuario_creador);
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuario no encontrado.' });
+    }
+
+    const rutasArchivos = req.files.map(f => f.path);
+    const pythonExecutable = getPythonExecutable();
+
+    const pythonProcess = spawn(pythonExecutable, [
+      'scripts/preprocesar_equifax.py',
+      ...rutasArchivos
+    ]);
+
+    let stdoutData = '';
+    let stderrData = '';
+
+    // ⏱️ TIMEOUT (5 min)
+    const timeout = setTimeout(() => {
+      pythonProcess.kill('SIGKILL');
+    }, 1000 * 60 * 5);
+
+    pythonProcess.stdout.on('data', d => stdoutData += d.toString());
+    pythonProcess.stderr.on('data', d => stderrData += d.toString());
+
+    pythonProcess.on('close', async () => {
+      clearTimeout(timeout);
+
+      rutasArchivos.forEach(r => fs.existsSync(r) && fs.unlinkSync(r));
+
+      let resultado;
+      try {
+        resultado = JSON.parse(stdoutData);
+      } catch {
+        await logActivity(
+          'equifax_error',
+          `Salida inválida Python: ${stderrData || stdoutData}`,
+          id_usuario
+        );
+        return res.status(500).json({ message: 'Error procesando Equifax.' });
+      }
+
+      if (resultado.error) {
+        await logActivity(
+          'equifax_error',
+          resultado.error,
+          id_usuario
+        );
+        return res.status(500).json({ message: resultado.error });
+      }
+
+      // 👉 GUARDAR EN tb_equifax_datasets
+      const dataset = await db.tb_equifax_datasets.create({
+        id_usuario: id_usuario,
+        archivo_csv: resultado.archivo_csv,
+        total_registros: resultado.total_registros,
+        score_equifax_promedio: resultado.score_equifax_promedio
+      });
+
+      await logActivity(
+        'equifax_dataset_creado',
+        `Dataset Equifax creado. Registros: ${resultado.total_registros}`,
+        id_usuario_creador
+      );
+
+      res.status(201).json({
+        message: 'Dataset Equifax creado correctamente.',
+        dataset
+      });
+    });
+
+  } catch (error) {
+    await logActivity(
+      'equifax_error',
+      error.message,
+      id_usuario
+    );
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get('/equifax', async (req, res) => {
+  const id_usuario = req.usuario.id_usuario;
+
+  try {
+    const datasets = await db.tb_equifax_datasets.findAll({
+      where: { id_usuario },
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.status(200).json(datasets);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 // Obtener todos los datasets
 router.get('/', async (req, res) => {
@@ -312,5 +434,69 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+router.delete('/equifax/:id', async (req, res) => {
+  const { id } = req.params;
+
+  // Protección mínima (sin duplicar tu control)
+  const id_usuario = req.usuario?.id_usuario;
+
+  try {
+    const dataset = await db.tb_equifax_datasets.findOne({
+      where: {
+        id_equifax_dataset: id,
+        id_usuario
+      }
+    });
+
+    if (!dataset) {
+      return res.status(404).json({
+        message: 'Dataset no encontrado o no autorizado.'
+      });
+    }
+
+    // Eliminar archivo CSV físico (si existe)
+    if (dataset.archivo_csv && fs.existsSync(dataset.archivo_csv)) {
+      try {
+        fs.unlinkSync(dataset.archivo_csv);
+      } catch (err) {
+        console.warn(
+          `No se pudo eliminar archivo CSV del dataset Equifax ${id}:`,
+          err.message
+        );
+      }
+    }
+
+    // Eliminar registro BD
+    await dataset.destroy();
+
+    // Registrar actividad
+    if (id_usuario) {
+      await logActivity(
+        'equifax_dataset_eliminado',
+        `Dataset Equifax eliminado ID ${id}`,
+        id_usuario
+      );
+    }
+
+    res.status(200).json({
+      message: 'Dataset eliminado correctamente.'
+    });
+
+  } catch (error) {
+    console.error(`Error eliminando dataset Equifax ${id}:`, error);
+
+    if (id_usuario) {
+      await logActivity(
+        'equifax_error',
+        `Error eliminando dataset Equifax ${id}: ${error.message}`,
+        id_usuario
+      );
+    }
+
+    res.status(500).json({
+      message: 'Error interno al eliminar el dataset Equifax.'
+    });
+  }
+});
 
 module.exports = router;

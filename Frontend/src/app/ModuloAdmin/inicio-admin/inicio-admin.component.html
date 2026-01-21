@@ -176,6 +176,13 @@
       </a>
     </li>
 
+        <li class="nav-item">
+      <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'equifax'}" href="" (click)="SeccionEquifax($event)">        
+        <i class="bi-bar-chart-fill"></i>
+        <span>Analizar equifax</span>
+      </a>
+    </li>
+
     <li class="nav-item">
       <a class="nav-link"[ngClass]="{'collapsed': activeMenu !== 'logs'}" href="" (click)="SeccionLogs($event)">        
         <i class="bi-journal-check"></i>
@@ -291,6 +298,9 @@
   </div>
    <div *ngIf="seccion === '11'">
     <app-actividades></app-actividades>
+  </div>
+    <div *ngIf="seccion === '12'">
+    <app-equifax ></app-equifax>
   </div>
   <footer class="footer">
     <span style="color: rgb(0, 0, 0)">Titulacion  &copy;  2025</span>

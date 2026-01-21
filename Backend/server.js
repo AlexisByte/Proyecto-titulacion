@@ -55,6 +55,7 @@ app.use('/api/evaluaciones', verificarToken, require('./routes/evaluaciones'));
 app.use('/api/datasets', verificarToken, require('./routes/datasets'));
 app.use('/api/resultados-entrenamiento', verificarToken, require('./routes/resultados-entrenamientos'));
 app.use('/api/logs',verificarToken, require('./routes/actividades')); 
+app.use('/api/equifax',verificarToken, require('./routes/equifax')); 
 app.use('/api', verificarToken, require('./routes/password'));
 require('./utils/limpiarArchivosTemporales')();
 
@@ -63,3 +64,9 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
 });
 
+/*
+// Aumentar el tiempo de espera del servidor
+server.timeout = 600000; 
+server.keepAliveTimeout = 600000;
+server.headersTimeout = 601000; // Debe ser ligeramente superior al keepAlive
+*/

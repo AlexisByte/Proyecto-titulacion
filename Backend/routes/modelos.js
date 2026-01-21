@@ -221,26 +221,39 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Buscar el modelo por ID
-    const versionExistente = await db.tb_versiones_modelos.findByPk(id);
+    const versionExistente = await db.tb_versiones_modelos.findByPk(id, {
+      include: [{ model: db.tb_resultados_entrenamiento, as: 'resultados' }]
+    });
 
     if (!versionExistente) {
       return res.status(404).json({ message: 'Modelo no encontrado.' });
     }
 
-    // Si estás almacenando la ruta del archivo, elimina el archivo físico
+    // 🔹 Eliminar archivos de modelos entrenados
+    for (const resultado of versionExistente.resultados) {
+      if (resultado.modelo_entrenado && fs.existsSync(resultado.modelo_entrenado)) {
+        fs.unlinkSync(resultado.modelo_entrenado);
+      }
+    }
+
+    // 🔹 Eliminar archivo de la versión
     if (versionExistente.contenido && fs.existsSync(versionExistente.contenido)) {
       fs.unlinkSync(versionExistente.contenido);
     }
 
-    // Eliminar el registro de la base de datos
+    // 🔹 Eliminar versión (borra resultados por CASCADE)
     await versionExistente.destroy();
-    
-    await logActivity('Modelo IA eliminado', `Modelo IA ${id} eliminado`, req.usuario.id_usuario);
 
-    res.status(200).json({ message: 'Modelo eliminado exitosamente.' });
+    await logActivity(
+      'Modelo IA eliminado',
+      `Versión ${id} y sus resultados fueron eliminados`,
+      req.usuario.id_usuario
+    );
+
+    res.status(200).json({ message: 'Modelo y entrenamientos eliminados correctamente.' });
+
   } catch (error) {
-    await logActivity('Error eliminado Modelo IA', error.message, req.usuario.id_usuario);
+    await logActivity('Error eliminando Modelo IA', error.message, req.usuario.id_usuario);
     res.status(500).json({ error: error.message });
   }
 });

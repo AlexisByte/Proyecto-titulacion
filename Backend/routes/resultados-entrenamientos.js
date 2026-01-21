@@ -35,155 +35,197 @@ const logActivity = async (action, details, userId) => {
 };
 
 router.post('/entrenamiento', async (req, res) => {
-    let { id_version, id_dataset, skip_columns,test_size,random_state,id_usuario_creador } = req.body;
+  const {
+    id_version,
+    id_dataset,
+    id_equifax_dataset,
+    skip_columns,
+    test_size,
+    random_state,
+    alpha
+  } = req.body;
 
-    try {
-        // Verificar existencia de los registros
-        const version = await db.tb_versiones_modelos.findByPk(id_version, { attributes: ['contenido'] });
-        const dataset = await db.tb_datasets.findByPk(id_dataset, { attributes: ['archivo'] });
+  const id_usuario = req.usuario.id_usuario;
 
-        if (!version) {
-            return res.status(404).json({ message: 'La versión del modelo no existe.' });
-        }
-        if (!dataset) {
-            return res.status(404).json({ message: 'El dataset no existe.' });
-        }
+  try {
+    // 1️⃣ Obtener versión del modelo
+    const version = await db.tb_versiones_modelos.findByPk(id_version);
 
-        // Verificar si ya existe un resultado para esa combinación
-        const existeResultado = await db.tb_resultados_entrenamiento.findOne({
-        where: {
-            id_version,
-            id_dataset
-        }
-        });
-
-        if (existeResultado) {
-            logActivity(
-                'entrenamiento_duplicado',
-                `Intento de entrenar con combinación existente: versión ${id_version}, dataset ${id_dataset}`,
-                id_usuario_creador
-            );
-            return res.status(409).json({
-                message: 'Ya existe un resultado para esta combinación de versión y dataset.',
-                existente: existeResultado
-            });
-        }
-
-        // Obtener rutas desde la base de datos
-        const modeloRuta = version.contenido;
-        const metadataPath = dataset.archivo; // ruta local completa al archivo .json
-        
-        // Leer el archivo de metadata de forma síncrona con await
-        const contenido = await fsPromises.readFile(metadataPath, 'utf8');
-        const metadata = JSON.parse(contenido)[0];
-        const datasetRuta = metadata.archivo_procesado;
-        console.log("Ruta dataset procesado 1: "+datasetRuta)
-
-        // Verificar existencia de archivos en el sistema
-        try {
-            if (!fs.existsSync(modeloRuta)) {
-                await logActivity('entrenamiento_error_archivo', `Modelo no encontrado en ruta ${modeloRuta}`, id_usuario_creador);
-                return res.status(400).json({ message: 'El archivo del modelo no existe en la ruta especificada.' });
-            }
-            if (!fs.existsSync(datasetRuta)) {
-                await logActivity('entrenamiento_error_archivo', `Dataset no encontrado en ruta ${datasetRuta}`, id_usuario_creador);
-                return res.status(400).json({ message: 'El archivo del dataset no existe en la ruta especificada.' });
-            }
-        } catch (error) {
-            return res.status(500).json({ message: 'Error al verificar la existencia de los archivos: ' + error.message });
-        }
-
-        // Ejecutar script de Python
-        const pythonProcess = spawn(pythonExecutable, [
-            'scripts/entrenar_ia.py',
-            datasetRuta,
-            modeloRuta,
-            String(parseInt(skip_columns) || 0), // Si es undefined, usa 0
-            String(parseFloat(test_size) || 0.2), // Si no es un número, usa 0.2
-            String(parseInt(random_state) || 42), // Si no es un número, usa 42
-            metadataPath
-        ]);
-        
-        let resultadoPython = '';
-        let errorPython = '';
-
-        pythonProcess.stdout.on('data', (data) => {
-            resultadoPython += data.toString();
-        });
-
-        pythonProcess.stderr.on('data', (data) => {
-            errorPython += data.toString();
-        });
-
-        pythonProcess.on('error', (error) => {
-            console.error('Error al ejecutar el script de Python:', error);
-            return res.status(500).json({ message: 'No se pudo ejecutar el entrenamiento.' });
-        });
-
-        pythonProcess.on('close', async (code) => {
-            if (code !== 0) {
-                await logActivity(
-                    'entrenamiento_fallido',
-                    `Error en script de entrenamiento Python. Código ${code}. Error: ${errorPython}`,
-                    id_usuario_creador
-                );
-                console.error(`Error en el script de Python: ${errorPython}`);
-                return res.status(500).json({ message: 'Error en el entrenamiento del modelo.', error: errorPython });
-            }
-            //console.log("Resultados antes: "+resultadoPython.trim())
-            try {
-                const resultados = JSON.parse(resultadoPython.trim());
-                console.log("Resultados: "+JSON.stringify(resultados, null, 4))
-                if (Object.values(resultados).some(val => val === null || val === undefined)) {
-                    await logActivity(
-                        'entrenamiento_resultado_invalido',
-                        `Resultados nulos o inválidos para versión ${id_version} y dataset ${id_dataset}`,
-                        id_usuario_creador
-                    );
-                    return res.status(500).json({ message: 'Resultados del entrenamiento inválidos.' });
-                }
-
-                // Guardar en la base de datos
-                const nuevoResultado = await db.tb_resultados_entrenamiento.create({
-                    id_version,
-                    id_dataset,
-                    matriz_confusion: JSON.stringify({
-                        etiquetas: resultados.clases,
-                        matriz: resultados.matriz_confusion
-                    }),                    
-                    precision: parseFloat(resultados.precision.toFixed(4)),
-                    exactitud: parseFloat(resultados.exactitud.toFixed(4)),
-                    recall: parseFloat(resultados.recall.toFixed(4)),
-                    f1_score: parseFloat(resultados.f1_score.toFixed(4)),
-                    modelo_entrenado: resultados.path
-                });
-                await logActivity(
-                'entrenamiento_exitoso',
-                `Entrenamiento completado para versión ${id_version} y dataset ${id_dataset}. ID resultado: ${nuevoResultado.id_resultado}`,
-                id_usuario_creador
-                );
-                res.status(201).json({ message: 'Entrenamiento completado.', nuevoResultado });
-            } catch (error) {
-                await logActivity(
-                    'entrenamiento_error_resultado',
-                    `Error al procesar resultados de entrenamiento: ${error.message}`,
-                    id_usuario_creador
-                );
-                console.error('Error procesando resultados:', error);
-                res.status(500).json({ message: 'Error procesando resultados del entrenamiento.' });
-            }
-        });
-
-    } catch (error) {
-        await logActivity(
-            'entrenamiento_error_general',
-            `Error general en endpoint /entrenamiento: ${error.message}`,
-            id_usuario_creador
-        );
-        console.error('Error en el entrenamiento:', error);
-        res.status(500).json({ message: 'Error interno del servidor.' });
+    if (!version) {
+      return res.status(404).json({ message: 'La versión del modelo no existe.' });
     }
+
+    // ============================================================
+    // 🧠 ENTRENAMIENTO DE CLASIFICACIÓN
+    // ============================================================
+    if (version.tipo_modelo === 'clasificacion') {
+
+      if (!id_dataset) {
+        return res.status(400).json({
+          message: 'Debe enviar id_dataset para modelos de clasificación.'
+        });
+      }
+
+      const dataset = await db.tb_datasets.findByPk(id_dataset);
+      if (!dataset) {
+        return res.status(404).json({ message: 'Dataset no encontrado.' });
+      }
+
+      // evitar duplicados
+      const existe = await db.tb_resultados_entrenamiento.findOne({
+        where: { id_version, id_dataset }
+      });
+
+      if (existe) {
+        return res.status(409).json({
+          message: 'Ya existe un entrenamiento para esta versión y dataset.',
+          existente: existe
+        });
+      }
+
+      const metadataPath = dataset.archivo;
+      const metadata = JSON.parse(await fsPromises.readFile(metadataPath, 'utf8'))[0];
+      const datasetRuta = metadata.archivo_procesado;
+
+      const python = spawn(pythonExecutable, [
+        'scripts/entrenar_ia.py',
+        datasetRuta,
+        version.contenido,
+        String(skip_columns || 0),
+        String(test_size || 0.2),
+        String(random_state || 42),
+        metadataPath
+      ]);
+
+      let salida = '';
+      let error = '';
+
+      python.stdout.on('data', d => salida += d.toString());
+      python.stderr.on('data', d => error += d.toString());
+
+      python.on('close', async (code) => {
+        if (code !== 0) {
+          await logActivity('entrenamiento_fallido', error, id_usuario);
+          return res.status(500).json({ message: 'Error entrenando modelo.', error });
+        }
+
+        const resultados = JSON.parse(salida.trim());
+
+        const entrenamiento = await db.tb_resultados_entrenamiento.create({
+          id_version,
+          id_dataset,
+          id_equifax_dataset: null,
+          matriz_confusion: {
+            etiquetas: resultados.clases,
+            matriz: resultados.matriz_confusion
+          },
+          precision: resultados.precision,
+          exactitud: resultados.exactitud,
+          recall: resultados.recall,
+          f1_score: resultados.f1_score,
+          modelo_entrenado: resultados.path
+        });
+
+        await logActivity(
+          'entrenamiento_exitoso',
+          `Clasificación entrenada (dataset ${id_dataset})`,
+          id_usuario
+        );
+
+        res.status(201).json({ message: 'Entrenamiento completado.', entrenamiento });
+      });
+
+      return;
+    }
+
+    // ============================================================
+    // 📊 ENTRENAMIENTO SCORE EQUIFAX
+    // ============================================================
+    if (version.tipo_modelo === 'score') {
+
+      if (!id_equifax_dataset) {
+        return res.status(400).json({
+          message: 'Debe enviar id_equifax_dataset para modelos score.'
+        });
+      }
+
+      const dataset = await db.tb_equifax_datasets.findByPk(id_equifax_dataset);
+      if (!dataset) {
+        return res.status(404).json({ message: 'Dataset Equifax no encontrado.' });
+      }
+
+      // evitar duplicados
+      const existe = await db.tb_resultados_entrenamiento.findOne({
+        where: { id_version, id_equifax_dataset }
+      });
+
+      if (existe) {
+        return res.status(409).json({
+          message: 'Ya existe un entrenamiento score para esta versión y dataset.',
+          existente: existe
+        });
+      }
+
+      const python = spawn(pythonExecutable, [
+        'scripts/entrenar_ia_score_equifax.py',
+        dataset.archivo_csv,
+        String(skip_columns || 0),
+        String(alpha || 0.7)
+      ]);
+
+      let salida = '';
+      let error = '';
+
+      python.stdout.on('data', d => salida += d.toString());
+      python.stderr.on('data', d => error += d.toString());
+
+      python.on('close', async (code) => {
+        if (code !== 0) {
+          await logActivity('entrenamiento_score_fallido', error, id_usuario);
+          return res.status(500).json({ message: 'Error entrenando score.', error });
+        }
+
+        const parsed = JSON.parse(salida.trim());
+        const resultado = parsed.resultado || parsed;
+
+        const entrenamiento = await db.tb_resultados_entrenamiento.create({
+          id_version,
+          id_dataset: null,
+          id_equifax_dataset,
+          modelo_entrenado: resultado.modelo_entrenado,
+          precision: null,
+          exactitud: null,
+          recall: null,
+          f1_score: null,
+          matriz_confusion: null
+        });
+
+        await logActivity(
+          'entrenamiento_score_exitoso',
+          `Score Equifax entrenado (dataset ${id_equifax_dataset})`,
+          id_usuario
+        );
+
+        res.status(201).json({
+          message: 'Entrenamiento score Equifax completado.',
+          entrenamiento,
+          resultado
+        });
+      });
+
+      return;
+    }
+
+    return res.status(400).json({
+      message: 'Tipo de modelo no soportado.'
+    });
+
+  } catch (error) {
+    await logActivity('entrenamiento_error_general', error.message, id_usuario);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
 });
+
 
 // Obtener todos los resultados de entrenamiento
 router.get('/', async (req, res) => {
@@ -377,12 +419,29 @@ router.post('/clasificar/csv', upload.single('archivo'), async (req, res) => {
 
                 try {
                     const resultado = JSON.parse(salida);
+                    if (resultado.filas_clasificadas <= 20 && resultado.archivo_pdf) {
+                        return res.download(
+                            resultado.archivo_pdf,
+                            'informe_clasificacion.pdf'
+                        );
+                    }
                     if (resultado.error) {
                         logActivity('clasificacion_fallida', resultado.error, id_usuario_creador);
                         return res.status(400).json({ error: resultado.error });
                     }
 
                     const archivoSalida = resultado.archivo_salida;
+                    db.tb_resultados_clasificacion.create({
+                      id_resultado_entrenamiento: id_modelo_entrenado,
+                      id_usuario: id_usuario_creador,
+                      tipo_clasificacion: 'CSV',
+                      resumen_resultado: {
+                        ...resultado.resumen,
+                        filas_clasificadas: resultado.filas_clasificadas,
+                        tiempo_segundos: resultado.tiempo_procesamiento_seg
+                      },
+                      archivo_csv_resultado: archivoSalida
+                    });
 
                     if (!fs.existsSync(archivoSalida)) {
                         logActivity('clasificacion_fallida', 'El archivo clasificado no fue generado', id_usuario_creador);
@@ -523,6 +582,17 @@ router.post('/clasificar/formulario', async (req, res) => {
       try {
         const resultadoFinal = JSON.parse(salida);
 
+        await db.tb_resultados_clasificacion.create({
+          id_resultado_entrenamiento: id_modelo_entrenado,
+          id_usuario: id_usuario_creador,
+          tipo_clasificacion: 'FORMULARIO',
+          resumen_resultado: {
+            prediccion: resultadoFinal.prediccion,
+            columna_objetivo: resultadoFinal.columna_objetivo
+          },
+          archivo_csv_resultado: null
+        });
+
         if (resultadoFinal.error) {
           await logActivity('clasificacion_fallida', resultadoFinal.error, id_usuario_creador);
           return res.status(400).json({ error: resultadoFinal.error });
@@ -543,6 +613,5 @@ router.post('/clasificar/formulario', async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
-
 
 module.exports = router;

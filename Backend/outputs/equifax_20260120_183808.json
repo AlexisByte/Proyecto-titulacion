@@ -1,0 +1,23 @@
+{
+  "nombre_reporte": "Reporte Equifax 2026-01-20 18:38:08",
+  "score_equifax": 855,
+  "score_reglas": 60.0,
+  "score_interno": 34.27,
+  "riesgo_final": "RIESGO ALTO",
+  "datos_equifax": {
+    "numero_documento": 1728013325,
+    "nombre": "QUISHPE LOPEZ MARIA OLIMPIA",
+    "score_equifax": 855,
+    "num_operaciones_historicas": 1,
+    "num_operaciones_vigentes": 1,
+    "num_operaciones_vencidas": 0,
+    "saldo_por_vencer": 58.55,
+    "saldo_vencido": 0.0,
+    "saldo_demanda": 0.0,
+    "saldo_castigado": 0.0,
+    "vencidos_actuales": 0.0,
+    "dias_vencidos_actual": 0,
+    "dias_vencidos_historico": 0,
+    "max_dias_vencido": 0
+  }
+}

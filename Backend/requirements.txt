@@ -26,3 +26,10 @@ optuna
 
 # Cobertura de código
 gcovr
+
+# Extracción de PDFs / XML (Equifax)
+pdfplumber
+lxml
+pillow
+pytesseract
+pdf2image

@@ -34,6 +34,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ModelosIAComponent } from './ModuloAdmin/modelos-ia/modelos-ia.component';
 import { ClasificarComponent } from './ModuloAdmin/clasificar/clasificar.component';
 import { ActividadesComponent } from './ModuloAdmin/actividades/actividades.component';
+import { EquifaxComponent } from './ModuloAdmin/equifax/equifax.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { ActividadesComponent } from './ModuloAdmin/actividades/actividades.comp
     ModelosIAComponent,
     ClasificarComponent,
     ActividadesComponent,
+    EquifaxComponent,
   ],
   imports: [
     BrowserModule,

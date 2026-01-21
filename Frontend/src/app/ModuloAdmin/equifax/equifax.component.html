@@ -1,0 +1,64 @@
+<div class="pagetitle">
+  <h1>📊 Análisis Equifax</h1>
+</div>
+
+<div class="card p-4">
+
+  <label class="form-label">Subir archivo Equifax (PDF o XML):</label>
+  <input 
+    type="file" 
+    (change)="onFileSelected($event)" 
+    accept=".pdf,.xml" 
+    class="form-control"
+  />
+
+  <div class="d-flex justify-content-center mt-3">
+    <button 
+      class="btn btn-primary w-50"
+      (click)="analizarEquifax()"
+      >
+      {{ cargando ? 'Analizando...' : 'Analizar Equifax' }}
+    </button>
+  </div>
+
+  <!-- DASHBOARD -->
+<div class="dashboard mt-4" *ngIf="resultado">
+
+  <h2 class="text-center mb-4">Resultado de Riesgo Equifax</h2>
+
+  <div class="row align-items-center">
+    <h2 
+  class="text-center fw-bold"
+  [ngClass]="{
+    'text-danger': resultado.riesgo === 'RIESGO ALTO',
+    'text-warning': resultado.riesgo === 'RIESGO MEDIO',
+    'text-success': resultado.riesgo === 'RIESGO BAJO'
+  }">
+  {{ resultado.riesgo }}
+</h2>
+
+    <!-- 🎯 GRÁFICO -->
+    <div class="col-md-6 text-center">
+      <canvas id="graficaScore" style="max-width:350px;"></canvas>
+      <h3 class="mt-2 fw-bold">{{ resultado.score_final }}</h3>
+    </div>
+
+    <!-- ⚠️ FACTORES NEGATIVOS 
+    <div class="col-md-6">
+      <h4>Factores Negativos</h4>
+
+      <ul class="list-group">
+        <li 
+          *ngFor="let f of resultado.factores_negativos"
+          class="list-group-item text-danger">
+          ❌ {{ f }}
+        </li>
+      </ul>
+    </div>-->
+
+  </div>
+
+</div>
+
+
+</div>

@@ -1,0 +1,2 @@
+nombre_reporte,score_equifax,score_reglas,score_interno,riesgo_final,datos_equifax
+Reporte Equifax 2026-01-20 15:57:19,117,31.63,74.31,RIESGO BAJO,"{'numero_documento': 1003755517, 'nombre': 'GRAMAL GAVILIMA EDGAR OSWALDO', 'score_equifax': 117, 'num_operaciones_historicas': 7, 'num_operaciones_vigentes': 2, 'num_operaciones_vencidas': 2, 'saldo_por_vencer': 0.0, 'saldo_vencido': 1189.51, 'saldo_demanda': 0.0, 'saldo_castigado': 348.0, 'vencidos_actuales': 3010.0, 'dias_vencidos_actual': 3, 'dias_vencidos_historico': 32, 'max_dias_vencido': 32}"
